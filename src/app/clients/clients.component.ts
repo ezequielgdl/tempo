@@ -7,7 +7,7 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [RouterLink],
   template: `
-    <h1>Cliente</h1>
+    <h1>Clientes</h1>
 
     <button class="" routerLink="/clients/new">Nuevo Cliente</button>
 
