@@ -63,11 +63,20 @@ export class TimerFormComponent {
 
   saveEntry() {
     if (this.selectedClient) {
+      const formattedTime = this.formatTime(this.time);
       this.save.emit({
         client: this.selectedClient,
         commentary: this.commentary,
-        time: this.time,
+        time: formattedTime,
       });
     }
+  }
+
+  private formatTime(time: string): string {
+    const [hours, minutes] = time.split(':').map(Number);
+    const totalMinutes = hours * 60 + minutes;
+    const formattedHours = Math.floor(totalMinutes / 60);
+    const formattedMinutes = totalMinutes % 60;
+    return `${formattedHours.toString().padStart(2, '0')}:${formattedMinutes.toString().padStart(2, '0')}`;
   }
 }

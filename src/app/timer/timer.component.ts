@@ -50,6 +50,7 @@ interface Timer {
             <button (click)="startTimer(timer)">Start Timer</button>
           }
           <button (click)="editTimer(timer)">Edit Timer</button>
+          <button (click)="deleteTimer(timer)">Delete Timer</button>
         }
 
         @if (timer.isEditing) {
@@ -144,6 +145,16 @@ export class TimerComponent implements OnDestroy {
   cancelEdit(timer: Timer) {
     timer.isEditing = false;
     this.updateFormattedTime(timer);
+  }
+
+  deleteTimer(timer: Timer) {
+    const index = this.timers.findIndex(t => t.id === timer.id);
+    if (index !== -1) {
+      if (timer.subscription) {
+        timer.subscription.unsubscribe();
+      }
+      this.timers.splice(index, 1);
+    }
   }
 
   // TO DO: add a way to save the timers and upload to the backend server
