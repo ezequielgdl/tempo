@@ -9,8 +9,8 @@ import { Client } from '../../interfaces';
   template: `
     <div class="modal">
       <div class="modal-content">
-        <h2>New Timer Entry</h2>
-        <label for="client">Client:</label>
+        <h2>Nuevo Timer</h2>
+        <label for="client">Cliente:</label>
         <select id="client" [(ngModel)]="selectedClient">
           @for (client of clients; track client.id) {
             <option [ngValue]="client">{{client.name}}</option>
@@ -20,8 +20,8 @@ import { Client } from '../../interfaces';
         <label for="commentary">Comentario (optional):</label>
         <textarea id="commentary" [(ngModel)]="commentary"></textarea>
 
-        <label for="time">Tiempo (minutes):</label>
-        <input type="number" id="time" [(ngModel)]="time" min="0">
+        <label for="time">Tiempo (HH:MM):</label>
+        <input type="text" id="time" [(ngModel)]="time" placeholder="00:00" pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$">
 
         <button (click)="saveEntry()">Empezar</button>
         <button (click)="closeModal()">Cancelar</button>
@@ -51,11 +51,11 @@ import { Client } from '../../interfaces';
 export class TimerFormComponent {
   @Input() clients: Client[] = [];
   @Output() close = new EventEmitter<void>();
-  @Output() save = new EventEmitter<{client: Client, commentary: string, time: number}>();
+  @Output() save = new EventEmitter<{client: Client, commentary: string, time: string}>();
 
   selectedClient: Client | null = null;
   commentary = '';
-  time = 0;
+  time = '00:00';
 
   closeModal() {
     this.close.emit();
@@ -66,7 +66,7 @@ export class TimerFormComponent {
       this.save.emit({
         client: this.selectedClient,
         commentary: this.commentary,
-        time: this.time
+        time: this.time,
       });
     }
   }
