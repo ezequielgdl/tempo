@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
 import { Client } from '../interfaces';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-clients',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   template: `
     <h1>Cliente</h1>
 
-    <button class="">Nuevo Cliente</button>
+    <button class="" routerLink="/clients/new">Nuevo Cliente</button>
 
     @if (clients.length === 0) {
       <p>No clients found.</p>
