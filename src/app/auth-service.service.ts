@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ export class AuthService {
   private supabase: SupabaseClient;
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
+  public isLoggedIn: Observable<boolean>;
 
   constructor() {
     this.supabase = createClient(
@@ -16,6 +18,7 @@ export class AuthService {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJleGZla3dnb2puemt5ZWVheGtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU4NzI1NzQsImV4cCI6MjA0MTQ0ODU3NH0.OOLyiykZLUn8qKWcfW7kvpGOov1T5FG96uPxgjlo-Fw');
     this.currentUserSubject = new BehaviorSubject<User | null>(null);
     this.currentUser = this.currentUserSubject.asObservable();
+    this.isLoggedIn = this.currentUser.pipe(map(user => !!user));
 
     this.supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN') {
@@ -26,16 +29,20 @@ export class AuthService {
     });
   }
 
-  async signInWithGoogle(): Promise<void> {
-    await this.supabase.auth.signInWithOAuth({
-      provider: 'google'
+  async signUp(email: string, password: string): Promise<void> {
+    const { error } = await this.supabase.auth.signUp({
+      email,
+      password,
     });
+    if (error) throw error;
   }
 
-  async signInWithGithub(): Promise<void> {
-    await this.supabase.auth.signInWithOAuth({
-      provider: 'github'
+  async signIn(email: string, password: string): Promise<void> {
+    const { error } = await this.supabase.auth.signInWithPassword({
+      email,
+      password,
     });
+    if (error) throw error;
   }
 
   async signOut(): Promise<void> {

@@ -11,6 +11,7 @@ import { RouterLink } from '@angular/router';
     </h1>
     <p>Asistente para autónomos.</p>
     <button routerLink="/login">Login</button>
+    <button routerLink="/signup">Signup</button>
   `,
   styles: ``
 })
