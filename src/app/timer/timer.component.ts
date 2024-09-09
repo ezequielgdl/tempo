@@ -68,12 +68,12 @@ interface Timer {
 export class TimerComponent implements OnDestroy {
   showModal = false;
   clients: Client[] = [{
-    id: 1, name: 'Client 1',
+    id: '1', name: 'Client 1',
     email: '',
     phone: '',
     address: ''
   }, {
-    id: 2, name: 'Client 2',
+    id: '2', name: 'Client 2',
     email: '',
     phone: '',
     address: ''
