@@ -61,7 +61,7 @@ export class NewComponent {
   onSubmit() {
     if (this.clientForm.valid) {
       this.newClient = {
-        id: 0, // This should be handled by the backend
+        id: '', // This should be handled by the backend
         name: this.clientForm.controls['name'].value,
         email: this.clientForm.controls['email'].value,
         phone: this.clientForm.controls['phone'].value,
