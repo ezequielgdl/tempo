@@ -6,20 +6,10 @@ import { FormsModule } from '@angular/forms';
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import { ClientService } from '../../services/client.service';
+import { TimerService } from '../../services/timer.service';
+import { Timer } from '../../interfaces';
 
 registerLocaleData(localeEs);
-
-interface Timer {
-  id: number;
-  client: Client;
-  commentary: string;
-  elapsedTime: number;
-  formattedTime: string;
-  isRunning: boolean;
-  subscription: Subscription | null;
-  createdDate: Date;
-  isEditing: boolean;
-}
 
 @Component({
   selector: 'app-timer',
@@ -38,13 +28,13 @@ interface Timer {
 
     @for (timer of timers; track timer.id) {
       <div>
-        <p>{{ timer.client.name }}</p>
-        <p>{{ timer.createdDate | date:'EEEE, d \\\'de\\\' MMMM \\\'de\\\' y':'':'es' }}</p>
+        <p>{{ timer.clientName }}</p>
+
         @if (timer.commentary) {
           <p>{{ timer.commentary }}</p>
         }
         <div>{{ timer.formattedTime }}</div>
-        @if (!timer.isEditing) {
+        @if (!this.isEditing) {
           @if (timer.isRunning) {
             <button (click)="stopTimer(timer)">Stop Timer</button>
           } @else {
@@ -54,7 +44,7 @@ interface Timer {
           <button (click)="deleteTimer(timer)">Delete Timer</button>
         }
 
-        @if (timer.isEditing) {
+        @if (this.isEditing) {
           <div>
             <input [(ngModel)]="timer.formattedTime" placeholder="HH:MM" pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$">
             <button (click)="updateTimer(timer)">Update</button>
@@ -68,19 +58,22 @@ interface Timer {
 })
 export class TimerComponent implements OnInit, OnDestroy {
   showModal = false;
+  isEditing = false;
   clients: Client[] = [];
   timers: Timer[] = [];
-  private nextTimerId = 1;
+  private timerSubscription: Subscription | null = null;
 
-  constructor(private clientService: ClientService) {}
+  constructor(private clientService: ClientService, private timerService: TimerService) {}
 
   ngOnInit() {
-    this.loadClients();
+    this.loadData();
+    this.startGlobalTimer();
   }
 
-  async loadClients() {
+  async loadData() {
     try {
       this.clients = await this.clientService.getClients();
+      this.timers = await this.timerService.getTimersToday();
     } catch (error) {
       console.error('Error loading clients:', error);
     }
@@ -94,38 +87,56 @@ export class TimerComponent implements OnInit, OnDestroy {
     this.showModal = false;
   }
 
-  saveEntry(entry: {client: Client, commentary: string, time: string}) {
+  async saveEntry(timerData: {client: Client, commentary: string, time: string}) {
     this.closeModal();
-    const [hours, minutes] = entry.time.split(':').map(Number);
+    const [hours, minutes] = timerData.time.split(':').map(Number);
     const elapsedTime = hours * 60 + minutes;
-    const newTimer: Timer = {
-      id: this.nextTimerId++,
-      client: entry.client,
-      commentary: entry.commentary,
+    const newTimer: Omit<Timer, 'id' | 'user_id'> = {
+      
+      clientId: timerData.client.id,
+      clientName: timerData.client.name,
+      commentary: timerData.commentary,
       elapsedTime: elapsedTime,
-      formattedTime: entry.time,
-      isRunning: false,
-      subscription: null,
-      createdDate: new Date(),
-      isEditing: false
+      formattedTime: timerData.time,
+      isRunning: true,
     };
-    this.timers.push(newTimer);
-    this.startTimer(newTimer);
+    try {
+      const createdTimer = await this.timerService.createTimer(newTimer);
+      this.timers.push(createdTimer);
+    } catch (error) {
+      console.error('Error creating timer:', error);
+    }
+  }
+
+  startGlobalTimer() {
+    this.timerSubscription = interval(60000).subscribe(() => {
+      this.timers.forEach(timer => {
+        if (timer.isRunning) {
+          timer.elapsedTime++;
+          this.updateFormattedTime(timer);
+        }
+      });
+    });
   }
 
   startTimer(timer: Timer) {
     timer.isRunning = true;
-    timer.subscription = interval(60000).subscribe(() => {
-      timer.elapsedTime++;
-      this.updateFormattedTime(timer);
-    });
   }
 
-  stopTimer(timer: Timer) {
-    if (timer.subscription) {
-      timer.subscription.unsubscribe();
-    }
+  async stopTimer(timer: Timer) {
     timer.isRunning = false;
+    this.updateFormattedTime(timer);
+    if (timer.id) {
+      try {
+        await this.timerService.updateTimer(timer.id, {
+          isRunning: false,
+          elapsedTime: timer.elapsedTime,
+          formattedTime: timer.formattedTime
+        });
+      } catch (error) {
+        console.error('Error updating timer in database:', error);
+      }
+    }
   }
 
   updateFormattedTime(timer: Timer) {
@@ -136,37 +147,47 @@ export class TimerComponent implements OnInit, OnDestroy {
 
   editTimer(timer: Timer) {
     this.stopTimer(timer);
-    timer.isEditing = true;
+    this.isEditing = true;
   }
 
-  updateTimer(timer: Timer) {
+  async updateTimer(timer: Timer) {
     const [hours, minutes] = timer.formattedTime.split(':').map(Number);
     timer.elapsedTime = hours * 60 + minutes;
     this.updateFormattedTime(timer);
-    timer.isEditing = false;
-  }
+    this.isEditing = false;
 
-  cancelEdit(timer: Timer) {
-    timer.isEditing = false;
-    this.updateFormattedTime(timer);
-  }
-
-  deleteTimer(timer: Timer) {
-    const index = this.timers.findIndex(t => t.id === timer.id);
-    if (index !== -1) {
-      if (timer.subscription) {
-        timer.subscription.unsubscribe();
+    if (timer.id) {
+      try {
+        await this.timerService.updateTimer(timer.id, {
+          elapsedTime: timer.elapsedTime,
+          formattedTime: timer.formattedTime
+        });
+      } catch (error) {
+        console.error('Error updating timer in database:', error);
       }
-      this.timers.splice(index, 1);
     }
   }
 
-  // TO DO: add a way to save the timers and upload to the backend server
-  ngOnDestroy() {
-    this.timers.forEach(timer => {
-      if (timer.subscription) {
-        timer.subscription.unsubscribe();
+  cancelEdit(timer: Timer) {
+    this.isEditing = false;
+    this.updateFormattedTime(timer);
+  }
+
+  async deleteTimer(timer: Timer) {
+    if (timer.id) {
+      try {
+        await this.timerService.deleteTimer(timer.id);
+        const index = this.timers.findIndex(t => t.id === timer.id);
+        if (index !== -1) {
+          this.timers.splice(index, 1);
+        }
+      } catch (error) {
+        console.error('Error deleting timer:', error);
       }
-    });
+    }
+  }
+
+  ngOnDestroy() {
+    this.timerSubscription?.unsubscribe();
   }
 }

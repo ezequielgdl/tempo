@@ -8,3 +8,13 @@ export interface Client {
     updated_at?: string;
     user_id?: string;
 }
+
+export interface Timer {
+    id?: number;
+    clientId: string;
+    clientName?: string;
+    commentary: string;
+    elapsedTime: number;
+    formattedTime: string;
+    isRunning: boolean;
+  }
