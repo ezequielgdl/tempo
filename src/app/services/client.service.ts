@@ -16,9 +16,13 @@ export class ClientService {
   }
 
   async getClients(): Promise<Client[]> {
+    const { data: { user } } = await this.supabase.auth.getUser();
+    if (!user) throw new Error('No authenticated user');
+
     const { data, error } = await this.supabase
       .from('clients')
-      .select('*');
+      .select('*')
+      .eq('user_id', user.id);
     if (error) throw error;
     return data as Client[];
   }
@@ -33,7 +37,7 @@ export class ClientService {
     return data as Client;
   }
 
-  async createClient(client: Omit<Client, 'id'>): Promise<Client> {
+  async createClient(client: Omit<Client, 'id' | 'user_id'>): Promise<Client> {
     const { data, error } = await this.supabase
       .from('clients')
       .insert(client)

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Client } from '../../interfaces';
 import { RouterLink } from '@angular/router';
+import { ClientService } from '../../services/client.service';
 
 @Component({
   selector: 'app-clients',
@@ -27,5 +28,19 @@ import { RouterLink } from '@angular/router';
   styles: ``
 })
 export class ClientsComponent {
-  clients: Client[] = []
+  clients: Client[] = [];
+
+  constructor(private clientService: ClientService) {}
+
+  ngOnInit() {
+    this.loadClients();
+  }
+
+  async loadClients() {
+    try {
+      this.clients = await this.clientService.getClients();
+    } catch (error) {
+      console.error('Error loading clients:', error);
+    }
+  }
 }
