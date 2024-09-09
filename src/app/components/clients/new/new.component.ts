@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Client } from '../../interfaces';
+import { Client } from '../../../interfaces';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
