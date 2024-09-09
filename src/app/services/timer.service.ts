@@ -48,14 +48,15 @@ export class TimerService {
     return data as Timer[];
   }
 
-  async getTimer(id: number): Promise<Timer | null> {
+  async getClientTimers(clientId: number): Promise<Timer[]> {
+    const user = await this.getAuthenticatedUser();
     const { data, error } = await this.supabase
       .from('timers')
       .select('*')
-      .eq('id', id)
-      .single();
+      .eq('client_id', clientId)
+      .eq('user_id', user.id);
     if (error) throw error;
-    return data as Timer;
+    return data as Timer[];
   }
 
   async createTimer(timer: Omit<Timer, 'id' | 'user_id'>): Promise<Timer> {
