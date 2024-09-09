@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { TimerFormComponent } from './timer-form/timer-form.component';
-import { Client } from '../interfaces';
+import { Client } from '../../interfaces';
 import { interval, Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { DatePipe, registerLocaleData } from '@angular/common';

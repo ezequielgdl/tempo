@@ -3,6 +3,9 @@ import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule, Validators } 
 import { Client } from '../../../interfaces';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ClientService } from '../../../services/client.service';
+import { AuthService } from '../../../services/auth-service.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-new',
@@ -47,9 +50,13 @@ import { CommonModule } from '@angular/common';
 })
 export class NewComponent {
   clientForm: FormGroup;
-  newClient: Client | null = null;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private clientService: ClientService,
+    private authService: AuthService // Add this
+  ) {
     this.clientForm = new FormGroup({
       name: new FormControl('', Validators.required),
       email: new FormControl('', [Validators.required, Validators.email]),
@@ -58,20 +65,33 @@ export class NewComponent {
     });
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.clientForm.valid) {
-      this.newClient = {
-        id: '', // This should be handled by the backend
-        name: this.clientForm.controls['name'].value,
-        email: this.clientForm.controls['email'].value,
-        phone: this.clientForm.controls['phone'].value,
-        address: this.clientForm.controls['address'].value,
-      };
-      console.log('New client:', this.newClient);
-      // Here you would typically call a service to save the new client
-      
-      // After saving the client, route back to /clients
-      this.router.navigate(['/clients']);
+      try {
+        const user = await firstValueFrom(this.authService.getCurrentUser());
+        if (!user) {
+          // Handle unauthenticated user
+          return;
+        }
+
+        const newClient: Omit<Client, 'id'> = {
+          name: this.clientForm.controls['name'].value,
+          email: this.clientForm.controls['email'].value,
+          phone: this.clientForm.controls['phone'].value,
+          address: this.clientForm.controls['address'].value,
+          user_id: user.id,
+        };
+
+        const createdClient = await this.clientService.createClient(newClient);
+        
+        if (createdClient && createdClient.id) {
+          this.router.navigate(['/clients']);
+        } else {
+          // Handle the case where the client was created but no ID was returned
+        }
+      } catch (error) {
+        // Handle error (e.g., show error message to user)
+      }
     } 
   }
 }
