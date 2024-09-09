@@ -1,55 +1,106 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private supabase: SupabaseClient;
-  private currentUserSubject: BehaviorSubject<User | null>;
-  public currentUser: Observable<User | null>;
-  public isLoggedIn: Observable<boolean>;
+  private currentUser: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
+  private lastCheck: number = 0;
+  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
-  constructor() {
+  constructor(private router: Router) {
     this.supabase = createClient(
       'https://bexfekwgojnzkyeeaxkf.supabase.co/', 
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJleGZla3dnb2puemt5ZWVheGtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU4NzI1NzQsImV4cCI6MjA0MTQ0ODU3NH0.OOLyiykZLUn8qKWcfW7kvpGOov1T5FG96uPxgjlo-Fw');
-    this.currentUserSubject = new BehaviorSubject<User | null>(null);
-    this.currentUser = this.currentUserSubject.asObservable();
-    this.isLoggedIn = this.currentUser.pipe(map(user => !!user));
+    this.initializeAuthState();
+  }
 
-    this.supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN') {
-        this.currentUserSubject.next(session?.user ?? null);
-      } else if (event === 'SIGNED_OUT') {
-        this.currentUserSubject.next(null);
+  private async initializeAuthState(): Promise<void> {
+    const user = await this.fetchCurrentUser();
+    this.currentUser.next(user);
+  }
+
+  async login(email: string, password: string): Promise<User | null> {
+    try {
+      const { data, error } = await this.supabase.auth.signInWithPassword(
+        { email, password }
+      );
+      if (error) {
+        return null;
       }
-    });
+      const user = data.user ?? null;
+      this.currentUser.next(user);
+      this.lastCheck = Date.now();
+      return user;
+    } catch (error) {
+      return null;
+    }
   }
 
-  async signUp(email: string, password: string): Promise<void> {
-    const { error } = await this.supabase.auth.signUp({
-      email,
-      password,
-    });
-    if (error) throw error;
+  async signUp(email: string, password: string): Promise<User | null> {
+    try {
+      const { data, error } = await this.supabase.auth.signUp(
+        { email, password }
+      );
+      if (error) {
+        console.error('Error signing up:', error.message);
+        return null;
+      }
+      const user = data.user ?? null;
+      this.currentUser.next(user);
+      this.lastCheck = Date.now();
+      return user;
+    } catch (error) {
+      console.error('Error signing up:', error);
+      return null;
+    }
   }
 
-  async signIn(email: string, password: string): Promise<void> {
-    const { error } = await this.supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) throw error;
+  async isLoggedIn(): Promise<User | null> {
+    const cachedUser = this.currentUser.getValue();
+    if (cachedUser && Date.now() - this.lastCheck < this.CACHE_DURATION) {
+      return cachedUser;
+    }
+
+    const user = await this.fetchCurrentUser();
+    this.currentUser.next(user);
+    this.lastCheck = Date.now();
+    return user;
   }
 
-  async signOut(): Promise<void> {
-    await this.supabase.auth.signOut();
+  private async fetchCurrentUser(): Promise<User | null> {
+    try {
+      const response = await this.supabase.auth.getUser();
+      if (
+        response.error &&
+        response.error.message === 'Auth session missing!'
+      ) {
+        return null;
+      }
+      return response.data?.user ?? null;
+    } catch (error) {
+      return null;
+    }
   }
 
-  getCurrentUser(): User | null {
-    return this.currentUserSubject.value;
+  async logout(): Promise<void> {
+    try {
+      const { error } = await this.supabase.auth.signOut();
+      if (error) {
+        console.error('Error logging out:', error.message);
+      }
+      this.currentUser.next(null);
+      this.lastCheck = 0;
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  }
+
+  getCurrentUser(): Observable<User | null> {
+    return this.currentUser.asObservable();
   }
 }

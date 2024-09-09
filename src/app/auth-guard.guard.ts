@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { AuthService } from './auth-service.service';
-import { map, Observable } from 'rxjs';
+import { User } from '@supabase/supabase-js';
 
 @Injectable({
   providedIn: 'root'
@@ -9,16 +9,13 @@ import { map, Observable } from 'rxjs';
 export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(): Observable<boolean> {
-    return this.authService.currentUser.pipe(
-      map(user => {
-        if (user) {
-          return true;
-        } else {
-          this.router.navigate(['/login']);
-          return false;
-        }
-      })
-    );
+  async canActivate(): Promise<boolean> {
+    const user: User | null = await this.authService.isLoggedIn();
+    if (user) {
+      return true;
+    } else {
+      this.router.navigate(['/login']);
+      return false;
+    }
   }
 }

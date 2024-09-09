@@ -44,7 +44,7 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       try {
         const { email, password } = this.loginForm.value;
-        await this.authService.signIn(email, password);
+        await this.authService.login(email, password);
         this.router.navigate(['/clients']);
       } catch (error) {
         console.error('Error signing in:', error);
