@@ -10,7 +10,7 @@ export class AuthService {
   private supabase: SupabaseClient;
   private currentUser: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
   private lastCheck: number = 0;
-  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+  private readonly CACHE_DURATION = 15 * 60 * 1000; // 5 minutes in milliseconds
 
   constructor(private router: Router) {
     this.supabase = createClient(
