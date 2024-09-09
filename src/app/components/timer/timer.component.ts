@@ -1,10 +1,11 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TimerFormComponent } from './timer-form/timer-form.component';
 import { Client } from '../../interfaces';
 import { interval, Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
+import { ClientService } from '../../services/client.service';
 
 registerLocaleData(localeEs);
 
@@ -65,22 +66,25 @@ interface Timer {
   `,
   styles: ``
 })
-export class TimerComponent implements OnDestroy {
+export class TimerComponent implements OnInit, OnDestroy {
   showModal = false;
-  clients: Client[] = [{
-    id: '1', name: 'Client 1',
-    email: '',
-    phone: '',
-    address: ''
-  }, {
-    id: '2', name: 'Client 2',
-    email: '',
-    phone: '',
-    address: ''
-  }]; // This should be populated with actual client data
-
+  clients: Client[] = [];
   timers: Timer[] = [];
   private nextTimerId = 1;
+
+  constructor(private clientService: ClientService) {}
+
+  ngOnInit() {
+    this.loadClients();
+  }
+
+  async loadClients() {
+    try {
+      this.clients = await this.clientService.getClients();
+    } catch (error) {
+      console.error('Error loading clients:', error);
+    }
+  }
 
   openModal() {
     this.showModal = true;
