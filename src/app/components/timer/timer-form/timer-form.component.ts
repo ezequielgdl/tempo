@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Client } from '../../interfaces';
+import { Client } from '../../../interfaces';
 
 @Component({
   selector: 'app-timer-form',
