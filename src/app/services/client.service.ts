@@ -59,10 +59,14 @@ export class ClientService {
   }
 
   async deleteClient(id: string): Promise<void> {
+    const { data: { user } } = await this.supabase.auth.getUser();
+    if (!user) throw new Error('No authenticated user');
+
     const { error } = await this.supabase
       .from('clients')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('user_id', user.id);
     if (error) throw error;
   }
 }

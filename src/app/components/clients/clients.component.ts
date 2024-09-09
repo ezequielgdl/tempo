@@ -19,7 +19,8 @@ import { ClientService } from '../../services/client.service';
             @for (client of clients; track client) {
               <li class="">
                 <span>{{ client.name }}</span>
-                <button class="">Editar</button>
+                <button [routerLink]="['/clients', client.id, 'edit']">Editar</button>
+                <button (click)="deleteClient(client.id)">Eliminar</button>
               </li>
             }
         </ul>
@@ -41,6 +42,17 @@ export class ClientsComponent {
       this.clients = await this.clientService.getClients();
     } catch (error) {
       console.error('Error loading clients:', error);
+    }
+  }
+
+  async deleteClient(id: string) {
+    if (confirm('¿Estás seguro de que quieres eliminar este cliente?')) {
+      try {
+        await this.clientService.deleteClient(id);
+        this.clients = this.clients.filter(client => client.id !== id);
+      } catch (error) {
+        console.error('Error deleting client:', error);
+      }
     }
   }
 }
