@@ -7,6 +7,8 @@ import { AuthGuard } from './auth-guard.guard';
 import { HomeComponent } from './components/home/home.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { EditComponent } from './components/clients/edit/edit.component';
+import { InvoicesComponent } from './components/invoices/invoices.component'; 
+import { NewInvoiceComponent } from './components/invoices/new/new.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -16,4 +18,6 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'clients/:id/edit', component: EditComponent, canActivate: [AuthGuard] },
+  { path: 'invoices', component: InvoicesComponent, canActivate: [AuthGuard] },
+  { path: 'invoices/:id/new', component: NewInvoiceComponent, canActivate: [AuthGuard] },
 ];
