@@ -33,9 +33,6 @@ export class InvoicesComponent {
 
   constructor(private clientService: ClientService) {}
 
-  async ngOnInit() {
-    this.clients = await this.clientService.getClients();
-  }
 
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;

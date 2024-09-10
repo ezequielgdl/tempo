@@ -62,6 +62,7 @@ export class TimerComponent implements OnInit, OnDestroy {
   clients: Client[] = [];
   timers: Timer[] = [];
   private timerSubscription: Subscription | null = null;
+  private clientsSubscription: Subscription | null = null;
 
   constructor(private clientService: ClientService, private timerService: TimerService) {}
 
@@ -72,7 +73,14 @@ export class TimerComponent implements OnInit, OnDestroy {
 
   async loadData() {
     try {
-      this.clients = await this.clientService.getClients();
+      this.clientsSubscription = this.clientService.getClients().subscribe({
+        next: (clients) => {
+          this.clients = clients;
+        },
+        error: (error) => {
+          console.error('Error loading clients:', error);
+        }
+      });
       this.timers = await this.timerService.getTimersToday();
     } catch (error) {
       console.error('Error loading clients:', error);

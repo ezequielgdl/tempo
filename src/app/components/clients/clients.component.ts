@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Client } from '../../interfaces';
 import { RouterLink } from '@angular/router';
 import { ClientService } from '../../services/client.service';
@@ -28,7 +28,7 @@ import { ClientService } from '../../services/client.service';
   `,
   styles: ``
 })
-export class ClientsComponent {
+export class ClientsComponent implements OnInit {
   clients: Client[] = [];
 
   constructor(private clientService: ClientService) {}
@@ -37,12 +37,15 @@ export class ClientsComponent {
     this.loadClients();
   }
 
-  async loadClients() {
-    try {
-      this.clients = await this.clientService.getClients();
-    } catch (error) {
-      console.error('Error loading clients:', error);
-    }
+  loadClients() {
+    this.clientService.getClients().subscribe({
+      next: (clients) => {
+        this.clients = clients;
+      },
+      error: (error) => {
+        console.error('Error loading clients:', error);
+      }
+    });
   }
 
   async deleteClient(id: string) {

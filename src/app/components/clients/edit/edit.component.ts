@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ClientService } from '../../../services/client.service';
@@ -46,9 +47,10 @@ import { CommonModule } from '@angular/common';
   `,
   styles: ``
 })
-export class EditComponent implements OnInit {
+export class EditComponent implements OnInit, OnDestroy {
   clientForm: FormGroup;
   clientId: string | null = null;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
@@ -65,7 +67,9 @@ export class EditComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(params => {
       this.clientId = params.get('id');
       if (this.clientId) {
         this.loadClient(this.clientId);
@@ -73,26 +77,39 @@ export class EditComponent implements OnInit {
     });
   }
 
-  async loadClient(id: string) {
-    try {
-      const client = await this.clientService.getClient(id);
-      if (client) {
-        this.clientForm.patchValue(client);
+  loadClient(id: string) {
+    this.clientService.getClient(id).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (client) => {
+        if (client) {
+          this.clientForm.patchValue(client);
+        }
+      },
+      error: (error) => {
+        console.error('Error loading client:', error);
       }
-    } catch (error) {
-      console.error('Error loading client:', error);
+    });
+  }
+
+  onSubmit() {
+    if (this.clientForm.valid && this.clientId) {
+      const updatedClient: Partial<Client> = this.clientForm.value;
+      this.clientService.updateClient(this.clientId, updatedClient).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
+        next: () => {
+          this.router.navigate(['/clients']);
+        },
+        error: (error) => {
+          console.error('Error updating client:', error);
+        }
+      });
     }
   }
 
-  async onSubmit() {
-    if (this.clientForm.valid && this.clientId) {
-      try {
-        const updatedClient: Partial<Client> = this.clientForm.value;
-        await this.clientService.updateClient(this.clientId, updatedClient);
-        this.router.navigate(['/clients']);
-      } catch (error) {
-        console.error('Error updating client:', error);
-      }
-    }
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

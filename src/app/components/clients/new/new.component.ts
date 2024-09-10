@@ -70,7 +70,6 @@ export class NewComponent {
       try {
         const user = await firstValueFrom(this.authService.getCurrentUser());
         if (!user) {
-          // Handle unauthenticated user
           return;
         }
 
@@ -82,7 +81,7 @@ export class NewComponent {
           user_id: user.id,
         };
 
-        const createdClient = await this.clientService.createClient(newClient);
+        const createdClient = await firstValueFrom(this.clientService.createClient(newClient));
         
         if (createdClient && createdClient.id) {
           this.router.navigate(['/clients']);
@@ -91,6 +90,7 @@ export class NewComponent {
         }
       } catch (error) {
         // Handle error (e.g., show error message to user)
+        console.error('Error creating client:', error);
       }
     } 
   }
