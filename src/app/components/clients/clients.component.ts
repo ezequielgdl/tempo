@@ -48,10 +48,10 @@ export class ClientsComponent implements OnInit {
     });
   }
 
-  async deleteClient(id: string) {
+  deleteClient(id: string) {
     if (confirm('¿Estás seguro de que quieres eliminar este cliente?')) {
       try {
-        await this.clientService.deleteClient(id);
+        this.clientService.deleteClient(id);
         this.clients = this.clients.filter(client => client.id !== id);
       } catch (error) {
         console.error('Error deleting client:', error);

@@ -24,8 +24,8 @@ import { AuthService } from '../../services/auth-service.service';
 export class NavbarComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
-  async logout() {
-    await this.authService.logout();
+  logout() {
+    this.authService.logout();
     this.router.navigate(['/login']);
   }
 }
