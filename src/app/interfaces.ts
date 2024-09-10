@@ -18,6 +18,7 @@ export interface Timer {
     elapsedTime: number;
     formattedTime: string;
     isRunning: boolean;
+
   }
 
 export interface Invoice {

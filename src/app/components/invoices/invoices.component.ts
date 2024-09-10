@@ -36,10 +36,9 @@ export class InvoicesComponent {
 
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
-  }
-
-  createInvoice() {
-    
+    this.clientService.getClients().subscribe(clients => {
+      this.clients = clients;
+    });
   }
 }
 

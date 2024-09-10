@@ -48,13 +48,39 @@ export class TimerService {
     return data as Timer[];
   }
 
-  async getClientTimers(clientId: number): Promise<Timer[]> {
+  async getClientTimers(clientId: string): Promise<Timer[]> {
     const user = await this.getAuthenticatedUser();
     const { data, error } = await this.supabase
       .from('timers')
       .select('*')
       .eq('client_id', clientId)
       .eq('user_id', user.id);
+    if (error) throw error;
+    return data as Timer[];
+  }
+
+  async getAllUninvoicedTimers(): Promise<Timer[]> {
+    const user = await this.getAuthenticatedUser();
+    const { data, error } = await this.supabase
+      .from('timers')
+      .select('*')
+      .eq('user_id', user.id)
+      .is('invoiceId', null);
+    if (error) throw error;
+    return data as Timer[];
+  }
+  
+  async getClientUninvoicedTimersByDate(clientId: string, startDate: Date, endDate: Date): Promise<Timer[]> {
+    const user = await this.getAuthenticatedUser();
+    const { data, error } = await this.supabase
+      .from('timers')
+      .select('*')
+      .eq('client_id', clientId)
+      .eq('user_id', user.id)
+      .is('invoiceId', null)
+      .gte('created_at', startDate.toISOString())
+      .lte('created_at', endDate.toISOString());
+    
     if (error) throw error;
     return data as Timer[];
   }

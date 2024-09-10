@@ -100,7 +100,6 @@ export class TimerComponent implements OnInit, OnDestroy {
     const [hours, minutes] = timerData.time.split(':').map(Number);
     const elapsedTime = hours * 60 + minutes;
     const newTimer: Omit<Timer, 'id' | 'user_id'> = {
-      
       clientId: timerData.client.id,
       clientName: timerData.client.name,
       commentary: timerData.commentary,
