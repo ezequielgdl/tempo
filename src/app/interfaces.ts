@@ -7,6 +7,8 @@ export interface Client {
     created_at?: string;
     updated_at?: string;
     user_id?: string;
+    CIF?: string;
+    pricePerHour: number;
 }
 
 export interface Timer {
@@ -18,7 +20,10 @@ export interface Timer {
     elapsedTime: number;
     formattedTime: string;
     isRunning: boolean;
-
+    pricePerHour: number;
+    total?: number;
+    irpf?: number;
+    iva?: number;
   }
 
 export interface Invoice {

@@ -106,6 +106,7 @@ export class TimerComponent implements OnInit, OnDestroy {
       elapsedTime: elapsedTime,
       formattedTime: timerData.time,
       isRunning: true,
+      pricePerHour: timerData.client.pricePerHour
     };
     try {
       const createdTimer = await this.timerService.createTimer(newTimer);

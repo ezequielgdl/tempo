@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { Timer } from '../../../interfaces';
 import { TimerService } from '../../../services/timer.service';
 import { ClientTimersService } from '../../../services/client-timers.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-new',
@@ -71,7 +72,8 @@ export class NewInvoiceComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private timerService: TimerService,
-    private clientTimersService: ClientTimersService
+    private clientTimersService: ClientTimersService,
+    private router: Router
   ) {
     this.invoiceForm = this.fb.group({
       invoiceType: ['all'],
@@ -97,6 +99,8 @@ export class NewInvoiceComponent implements OnInit {
       const { startDate, endDate } = this.getDateRange(timePeriod);
       this.getAllUninvoicedTimersByDate(startDate, endDate);
     }
+
+     this.router.navigate(['/invoices', this.clientId, 'edit']);
   }
 
   getDateRange(timePeriod: string): { startDate: Date, endDate: Date } {

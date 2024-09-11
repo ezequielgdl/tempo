@@ -41,6 +41,13 @@ import { firstValueFrom } from 'rxjs';
           <div>Teléfono es requerido</div>
         }
       </div>
+      <div>
+        <label for="pricePerHour">Precio por hora:</label>
+        <input id="pricePerHour" type="number" formControlName="pricePerHour">
+        @if (clientForm.get('pricePerHour')?.invalid && clientForm.get('pricePerHour')?.touched) {
+          <div>Precio por hora es requerido</div>
+        }
+      </div>
 
       <button type="submit" [disabled]="clientForm.invalid">Save</button>
       <button type="button" routerLink="/clients">Cancel</button>
@@ -61,7 +68,8 @@ export class NewComponent {
       name: new FormControl('', Validators.required),
       email: new FormControl('', [Validators.required, Validators.email]),
       phone: new FormControl('', Validators.required),
-      address: new FormControl('', Validators.required)
+      address: new FormControl('', Validators.required),
+      pricePerHour: new FormControl(0, Validators.required)
     });
   }
 
@@ -79,6 +87,7 @@ export class NewComponent {
           phone: this.clientForm.controls['phone'].value,
           address: this.clientForm.controls['address'].value,
           user_id: user.id,
+          pricePerHour: 0
         };
 
         const createdClient = await firstValueFrom(this.clientService.createClient(newClient));
@@ -86,10 +95,9 @@ export class NewComponent {
         if (createdClient && createdClient.id) {
           this.router.navigate(['/clients']);
         } else {
-          // Handle the case where the client was created but no ID was returned
+          console.error('Error creating client: Client not created');
         }
       } catch (error) {
-        // Handle error (e.g., show error message to user)
         console.error('Error creating client:', error);
       }
     } 
