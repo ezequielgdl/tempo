@@ -7,12 +7,12 @@ import { Client } from '../../../interfaces';
 import { ClientService } from '../../../services/client.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-edit-invoice',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   template: `
     <h2>Edit Invoice</h2>
     <form [formGroup]="invoiceForm">
@@ -34,11 +34,11 @@ import { Subscription } from 'rxjs';
       </div>
       <div>
         <label for="iva">IVA (%):</label>
-        <input id="iva" type="number" formControlName="iva">
+        <input id="iva" type="number" formControlName="iva" (ngModelChange)="updateTotals()">
       </div>
       <div>
         <label for="irpf">IRPF (%):</label>
-        <input id="irpf" type="number" formControlName="irpf">
+        <input id="irpf" type="number" formControlName="irpf" (ngModelChange)="updateTotals()">
       </div>
       <div>
         <label for="currency">Currency:</label>
@@ -56,30 +56,26 @@ import { Subscription } from 'rxjs';
       <div class="timer-row">
         <label>
           Proyecto:
-          <input type="text" [value]="timer.commentary || ''" placeholder="Observaciones">
+          <input type="text" [(ngModel)]="timer.commentary" placeholder="Observaciones">
         </label>
         <label>
           Horas:
-          <input type="text" [value]="formatHours(timer.elapsedTime)">
+          <input type="text" [(ngModel)]="timer.elapsedTime" (ngModelChange)="updateTotals()">
         </label>
         <label>
           Precio/hora:
-          <input type="number" [value]="timer.pricePerHour">
+          <input type="text" [(ngModel)]="timer.pricePerHour" (ngModelChange)="updateTotals()">
         </label>
         <label>
-          IRPF (%):
-          <input type="number" [value]="invoiceForm.get('irpf')?.value">
-        </label>
-        <label>
-          IVA (%):
-          <input type="number" [value]="invoiceForm.get('iva')?.value">
-        </label>
-        <label>
-          Total: {{ timer.total }}
+          {{ timer.elapsedTime * timer.pricePerHour | currency:invoiceForm.get('currency')?.value }}
         </label>
       </div>
     }
     <button (click)="addEmptyTimer()">Add Timer</button>
+    <div>Subtotal: {{ subtotal | currency:invoiceForm.get('currency')?.value }}</div>
+    <div>IVA ({{ invoiceForm.get('iva')?.value }}%): {{ ivaAmount | currency:invoiceForm.get('currency')?.value }}</div>
+    <div>IRPF ({{ invoiceForm.get('irpf')?.value }}%): -{{ irpfAmount | currency:invoiceForm.get('currency')?.value }}</div>
+    <div>Total Invoice: {{ totalInvoice | currency:invoiceForm.get('currency')?.value }}</div>
   `,
   styles: [`
     form div { margin-bottom: 10px; }
@@ -90,6 +86,10 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
   invoiceForm: FormGroup;
   clientTimers: Timer[] = [];
   client: Client | null = null;
+  totalInvoice: number = 0;
+  subtotal: number = 0;
+  ivaAmount: number = 0;
+  irpfAmount: number = 0;
   private routeSubscription!: Subscription;
 
   constructor(
@@ -107,6 +107,9 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
       irpf: [15, [Validators.required, Validators.min(0), Validators.max(100)]],
       currency: ['EUR', Validators.required]
     });
+
+    this.invoiceForm.get('iva')?.valueChanges.subscribe(() => this.updateTotals());
+    this.invoiceForm.get('irpf')?.valueChanges.subscribe(() => this.updateTotals());
   }
 
   ngOnInit() {
@@ -130,34 +133,48 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
   addEmptyTimer() {
     this.clientTimers.push({
       commentary: '',
-      elapsedTime: 60,
+      elapsedTime: this.formatHours(60),
       pricePerHour: this.client?.pricePerHour || 0,
       invoiceId: this.invoiceForm.get('invoiceNumber')?.value,
       clientId: this.invoiceForm.get('client')?.value,
       formattedTime: '00:00',
       isRunning: false,
-      total: 0
     });
-
+    this.updateTotals();
   } 
 
-  loadClientTimers() {
-    this.clientTimers = this.clientTimersService.getClientTimers();
+  updateTotals() {
+    this.calculateSubtotal();
+    this.calculateIvaAndIrpf();
+    this.calculateTotalInvoice();
   }
 
-  formatHours(minutes: number): string {
-    return (minutes / 60).toFixed(2).replace('.', ',');
+  calculateSubtotal() {
+    this.subtotal = this.clientTimers.reduce((acc, timer) => 
+      acc + (timer.elapsedTime * timer.pricePerHour), 0);
+  }
+
+  calculateIvaAndIrpf() {
+    const ivaRate = this.invoiceForm.get('iva')?.value / 100;
+    const irpfRate = this.invoiceForm.get('irpf')?.value / 100;
+    this.ivaAmount = this.subtotal * ivaRate;
+    this.irpfAmount = this.subtotal * irpfRate;
+  }
+
+  calculateTotalInvoice() {
+    this.totalInvoice = this.subtotal + this.ivaAmount - this.irpfAmount;
+  }
+
+  formatHours(minutes: number): number {
+    return Number((minutes / 60).toFixed(2));
+  }
+  
+  loadClientTimers() {
+    this.clientTimers = this.clientTimersService.getClientTimers();
+    this.updateTotals();
   }
 
   formatDate(date: Date): string {
     return date.toISOString().split('T')[0];
-  }
-
-  calculateTotal(timer: Timer): number {
-   const hours = timer.elapsedTime / 60;
-    const subtotal = hours * timer.pricePerHour;
-    const iva = subtotal * (this.invoiceForm.get('iva')?.value / 100);
-    const irpf = subtotal * (this.invoiceForm.get('irpf')?.value / 100);
-    return subtotal + iva - irpf;
   }
 }
