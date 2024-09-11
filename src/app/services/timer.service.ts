@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
+import { firstValueFrom } from 'rxjs';
+import { SupabaseClient, User } from '@supabase/supabase-js';
+
 import { Timer } from '../interfaces';
 import { AuthService } from './auth-service.service';
-import { firstValueFrom } from 'rxjs';
 import { SupabaseService } from './supabase.service';
 
 @Injectable({

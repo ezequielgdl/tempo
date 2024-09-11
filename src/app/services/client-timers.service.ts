@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Timer } from '../interfaces';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Timer } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'

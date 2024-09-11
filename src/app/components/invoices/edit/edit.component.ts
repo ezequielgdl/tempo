@@ -1,14 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ClientTimersService } from '../../../services/client-timers.service';
-import { Timer } from '../../../interfaces';
-import { Client } from '../../../interfaces';
-import { ClientService } from '../../../services/client.service';
-import { ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+
+import { Client, Timer } from '../../../interfaces';
+import { ClientService } from '../../../services/client.service';
+import { ClientTimersService } from '../../../services/client-timers.service';
 
 @Component({
   selector: 'app-edit-invoice',

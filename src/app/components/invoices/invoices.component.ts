@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { ClientService } from '../../services/client.service';
-import { Client } from '../../interfaces';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
+import { Client } from '../../interfaces';
+import { ClientService } from '../../services/client.service';
 
 @Component({
   selector: 'app-invoices',

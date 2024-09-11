@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Client } from '../../../interfaces';
-import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ClientService } from '../../../services/client.service';
-import { AuthService } from '../../../services/auth-service.service';
+import { Component } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+
+import { Client } from '../../../interfaces';
+import { AuthService } from '../../../services/auth-service.service';
+import { ClientService } from '../../../services/client.service';
 
 @Component({
   selector: 'app-new',

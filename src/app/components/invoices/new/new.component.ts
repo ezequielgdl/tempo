@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+
 import { Timer } from '../../../interfaces';
-import { TimerService } from '../../../services/timer.service';
 import { ClientTimersService } from '../../../services/client-timers.service';
-import { Router } from '@angular/router';
+import { TimerService } from '../../../services/timer.service';
 
 @Component({
   selector: 'app-new',

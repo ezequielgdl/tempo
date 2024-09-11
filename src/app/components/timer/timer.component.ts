@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { TimerFormComponent } from './timer-form/timer-form.component';
-import { Client } from '../../interfaces';
-import { interval, Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
+import { interval, Subscription } from 'rxjs';
+
+import { TimerFormComponent } from './timer-form/timer-form.component';
 import { ClientService } from '../../services/client.service';
 import { TimerService } from '../../services/timer.service';
-import { Timer } from '../../interfaces';
+import { Client, Timer } from '../../interfaces';
 
 registerLocaleData(localeEs);
 

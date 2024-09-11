@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ClientService } from '../../../services/client.service';
+import { Subject, takeUntil } from 'rxjs';
+
 import { Client } from '../../../interfaces';
-import { CommonModule } from '@angular/common';
+import { ClientService } from '../../../services/client.service';
 
 @Component({
   selector: 'app-edit',

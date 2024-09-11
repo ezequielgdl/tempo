@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
 import { Observable, of, from } from 'rxjs';
-import { map, catchError, shareReplay, switchMap } from 'rxjs/operators';
+import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
+import { SupabaseClient, User } from '@supabase/supabase-js';
 import { SupabaseService } from './supabase.service';
 
 @Injectable({
