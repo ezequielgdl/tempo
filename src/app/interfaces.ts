@@ -29,6 +29,14 @@ export interface Invoice {
     id: string;
     clientId: string;
     date: string;
-    total:number;
+    total: number;
     isPaid: boolean;
+    timers: Timer[];
+    issueDate: string;
+    dueDate: string;
+    iva: number;
+    irpf: number;
+    currency: string;
+    subject: string;
+    notes: string;
   }

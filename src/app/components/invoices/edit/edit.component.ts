@@ -4,9 +4,10 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { Client, Timer } from '../../../interfaces';
+import { Client, Timer, Invoice } from '../../../interfaces';
 import { ClientService } from '../../../services/client.service';
 import { ClientTimersService } from '../../../services/client-timers.service';
+import { InvoicesService } from '../../../services/invoices.service';
 
 @Component({
   selector: 'app-edit-invoice',
@@ -97,6 +98,7 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
   invoiceForm: FormGroup;
   clientTimers: Timer[] = [];
   client: Client | null = null;
+  invoice: Invoice | null = null;
   totalInvoice: number = 0;
   subtotal: number = 0;
   ivaAmount: number = 0;
@@ -108,6 +110,7 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private clientTimersService: ClientTimersService,
     private clientService: ClientService,
+    private invoicesService: InvoicesService,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -167,8 +170,12 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
   }
 
   saveInvoice() {
-    console.log('Guardar');
-    console.log(this.invoiceForm.value, this.clientTimers);
+    this.invoice = {
+      ...this.invoiceForm.value,
+      timers: this.clientTimers
+    };
+    this.invoicesService.setCurrentInvoice(this.invoice!);
+    console.log(this.invoice);
   }
 
   cancelInvoice() {
