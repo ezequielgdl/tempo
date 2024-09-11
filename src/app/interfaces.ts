@@ -28,7 +28,9 @@ export interface Timer {
 export interface Invoice {
     id: string;
     clientId: string;
+    invoiceNumber: number | string;
     date: string;
+    subtotal: number;
     total: number;
     isPaid: boolean;
     timers: Timer[];

@@ -115,7 +115,7 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
     private router: Router
   ) {
     this.invoiceForm = this.fb.group({
-      invoiceNumber: [0, Validators.required],
+      invoiceNumber: ['', Validators.required],
       issueDate: [this.formatDate(new Date()), Validators.required],
       dueDate: ['', Validators.required],
       client: [this.client?.name || '', Validators.required],
@@ -172,10 +172,16 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
   saveInvoice() {
     this.invoice = {
       ...this.invoiceForm.value,
-      timers: this.clientTimers
+      timers: this.clientTimers,
+      clientId: this.client?.id,
+      id: crypto.randomUUID(),
+      subtotal: this.subtotal,
+      iva: this.ivaAmount,
+      irpf: this.irpfAmount,
+      total: this.totalInvoice
     };
     this.invoicesService.setCurrentInvoice(this.invoice!);
-    console.log(this.invoice);
+    this.router.navigate(['/invoices', this.invoice?.id]);
   }
 
   cancelInvoice() {
