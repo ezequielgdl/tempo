@@ -8,14 +8,15 @@ import { ClientService } from '../../../services/client.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-invoice',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   template: `
-    <h2>Edit Invoice</h2>
-    <form [formGroup]="invoiceForm">
+    <h2>Factura para {{ client?.name }}</h2>
+    <form [formGroup]="invoiceForm" (ngSubmit)="saveInvoice()" id="invoiceForm">
       <div>
         <label for="invoiceNumber">Número de factura:</label>
         <input id="invoiceNumber" type="text" formControlName="invoiceNumber">
@@ -41,7 +42,15 @@ import { FormsModule } from '@angular/forms';
         <input id="irpf" type="number" formControlName="irpf" (ngModelChange)="updateTotals()">
       </div>
       <div>
-        <label for="currency">Currency:</label>
+        <label for="subject">Sujeto:</label>
+        <input id="subject" type="text" formControlName="subject">
+      </div>
+      <div>
+        <label for="notes">Notas:</label>
+        <textarea id="notes" formControlName="notes"></textarea>
+      </div>
+      <div>
+        <label for="currency">Moneda:</label>
         <select id="currency" formControlName="currency">
           <option value="EUR">EUR</option>
           <option value="USD">USD</option>
@@ -52,7 +61,7 @@ import { FormsModule } from '@angular/forms';
 
     <h3>Client Timers</h3>
     
-    @for (timer of clientTimers; track timer.id) {
+    @for (timer of clientTimers; track timer.tempId) {
       <div class="timer-row">
         <label>
           Proyecto:
@@ -69,17 +78,21 @@ import { FormsModule } from '@angular/forms';
         <label>
           {{ timer.elapsedTime * timer.pricePerHour | currency:invoiceForm.get('currency')?.value }}
         </label>
+        <button (click)="removeTimer(timer)">X</button>
       </div>
     }
-    <button (click)="addEmptyTimer()">Add Timer</button>
+    <button (click)="addEmptyTimer()">Agregar Item</button>
     <div>Subtotal: {{ subtotal | currency:invoiceForm.get('currency')?.value }}</div>
     <div>IVA ({{ invoiceForm.get('iva')?.value }}%): {{ ivaAmount | currency:invoiceForm.get('currency')?.value }}</div>
     <div>IRPF ({{ invoiceForm.get('irpf')?.value }}%): -{{ irpfAmount | currency:invoiceForm.get('currency')?.value }}</div>
     <div>Total Invoice: {{ totalInvoice | currency:invoiceForm.get('currency')?.value }}</div>
+    <button type="submit" form="invoiceForm">Guardar</button>
+    <button (click)="cancelInvoice()">Cancelar</button>
   `,
   styles: [`
     form div { margin-bottom: 10px; }
     .timer-row { display: flex; gap: 10px; margin-bottom: 5px; }
+    .timer-row button { margin-left: 10px; }
   `]
 })
 export class EditInvoiceComponent implements OnInit, OnDestroy {
@@ -91,12 +104,14 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
   ivaAmount: number = 0;
   irpfAmount: number = 0;
   private routeSubscription!: Subscription;
+  private timerIdCounter = 0;
 
   constructor(
     private fb: FormBuilder,
     private clientTimersService: ClientTimersService,
     private clientService: ClientService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.invoiceForm = this.fb.group({
       invoiceNumber: [0, Validators.required],
@@ -105,7 +120,9 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
       client: [this.client?.name || '', Validators.required],
       iva: [21, [Validators.required, Validators.min(0), Validators.max(100)]],
       irpf: [15, [Validators.required, Validators.min(0), Validators.max(100)]],
-      currency: ['EUR', Validators.required]
+      currency: ['EUR', Validators.required],
+      subject: [''],
+      notes: ['']
     });
 
     this.invoiceForm.get('iva')?.valueChanges.subscribe(() => this.updateTotals());
@@ -123,25 +140,11 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
     });
   }
 
-
   ngOnDestroy() {
     if (this.routeSubscription) {
       this.routeSubscription.unsubscribe();
     }
   }
-
-  addEmptyTimer() {
-    this.clientTimers.push({
-      commentary: '',
-      elapsedTime: this.formatHours(60),
-      pricePerHour: this.client?.pricePerHour || 0,
-      invoiceId: this.invoiceForm.get('invoiceNumber')?.value,
-      clientId: this.invoiceForm.get('client')?.value,
-      formattedTime: '00:00',
-      isRunning: false,
-    });
-    this.updateTotals();
-  } 
 
   updateTotals() {
     this.calculateSubtotal();
@@ -165,13 +168,46 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
     this.totalInvoice = this.subtotal + this.ivaAmount - this.irpfAmount;
   }
 
+  saveInvoice() {
+    console.log('Guardar');
+    console.log(this.invoiceForm.value, this.clientTimers);
+  }
+
+  cancelInvoice() {
+    this.router.navigate(['/invoices', this.client?.id, '/new']);
+  } 
+
+  loadClientTimers() {
+    this.clientTimers = this.clientTimersService.getClientTimers().map(timer => ({
+      ...timer,
+      elapsedTime: this.formatHours(timer.elapsedTime),
+      pricePerHour: this.client?.pricePerHour || 0,
+      tempId: this.timerIdCounter++
+    }));
+    this.updateTotals();
+  }
+
+  addEmptyTimer() {
+    this.clientTimers.push({
+      commentary: '',
+      elapsedTime: this.formatHours(60),
+      pricePerHour: this.client?.pricePerHour || 0,
+      invoiceId: this.invoiceForm.get('invoiceNumber')?.value,
+      clientId: this.invoiceForm.get('client')?.value,
+      formattedTime: '00:00',
+      isRunning: false,
+      tempId: this.timerIdCounter++
+    });
+    this.updateTotals();
+  }
+
+  removeTimer(timerToRemove: Timer) {
+    this.clientTimers = this.clientTimers.filter(timer => timer !== timerToRemove);
+    this.updateTotals();
+  }
+
   formatHours(minutes: number): number {
     return Number((minutes / 60).toFixed(2));
-  }
-  
-  loadClientTimers() {
-    this.clientTimers = this.clientTimersService.getClientTimers();
-    this.updateTotals();
   }
 
   formatDate(date: Date): string {

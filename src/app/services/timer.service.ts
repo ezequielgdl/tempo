@@ -3,6 +3,7 @@ import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
 import { Timer } from '../interfaces';
 import { AuthService } from './auth-service.service';
 import { firstValueFrom } from 'rxjs';
+import { SupabaseService } from './supabase.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,11 +11,8 @@ import { firstValueFrom } from 'rxjs';
 export class TimerService {
   private supabase: SupabaseClient;
 
-  constructor(private authService: AuthService) {
-    this.supabase = createClient(
-      'https://bexfekwgojnzkyeeaxkf.supabase.co/',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJleGZla3dnb2puemt5ZWVheGtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU4NzI1NzQsImV4cCI6MjA0MTQ0ODU3NH0.OOLyiykZLUn8qKWcfW7kvpGOov1T5FG96uPxgjlo-Fw'
-    );
+  constructor(private authService: AuthService, private supabaseService: SupabaseService) {
+    this.supabase = this.supabaseService.getClient();
   }
 
   private async getAuthenticatedUser(): Promise<User> {

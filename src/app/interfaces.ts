@@ -22,6 +22,7 @@ export interface Timer {
     isRunning: boolean;
     pricePerHour: number;
     total?: number;
+    tempId?: number;
   }
 
 export interface Invoice {

@@ -3,6 +3,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Client } from '../interfaces';
 import { BehaviorSubject, Observable, from, of } from 'rxjs';
 import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { SupabaseService } from './supabase.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +13,8 @@ export class ClientService {
   private clientsSubject = new BehaviorSubject<Client[] | null>(null);
   private clients$: Observable<Client[]>;
 
-  constructor() {
-    this.supabase = createClient(
-      'https://bexfekwgojnzkyeeaxkf.supabase.co/',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJleGZla3dnb2puemt5ZWVheGtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU4NzI1NzQsImV4cCI6MjA0MTQ0ODU3NH0.OOLyiykZLUn8qKWcfW7kvpGOov1T5FG96uPxgjlo-Fw'
-    );
+  constructor(private supabaseService: SupabaseService) {
+    this.supabase = this.supabaseService.getClient();
 
     this.clients$ = this.clientsSubject.pipe(
       switchMap(clients => clients ? of(clients) : this.fetchClients()),
