@@ -63,7 +63,6 @@ import { InvoicesService } from '../../../services/invoices.service';
     @for (timer of clientTimers; track timer.tempId) {
       <div class="timer-row">
         <label>
-          Proyecto:
           <input type="text" [(ngModel)]="timer.commentary" placeholder="Observaciones">
         </label>
         <label>
