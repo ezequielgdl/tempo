@@ -11,6 +11,7 @@ import { InvoicesComponent } from './components/invoices/invoices.component';
 import { NewInvoiceComponent } from './components/invoices/new/new.component';
 import { EditInvoiceComponent } from './components/invoices/edit/edit.component';
 import { InvoiceComponent } from './components/invoices/invoice/invoice.component';
+import { UserComponent } from './components/user/user.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -24,4 +25,5 @@ export const routes: Routes = [
   { path: 'invoices/:id/new', component: NewInvoiceComponent, canActivate: [AuthGuard] },
   { path: 'invoices/:id/edit', component: EditInvoiceComponent, canActivate: [AuthGuard] },
   { path: 'invoices/:id', component: InvoiceComponent, canActivate: [AuthGuard] },
+  { path: 'user', component: UserComponent, canActivate: [AuthGuard] },
 ];

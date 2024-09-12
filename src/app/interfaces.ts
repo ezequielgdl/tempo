@@ -42,3 +42,12 @@ export interface Invoice {
     subject: string;
     notes: string;
   }
+
+  export interface UserInfo {
+    id: string;
+    name: string;
+    address: string;
+    phone: string;
+    website: string;
+    nif: string;
+  }
