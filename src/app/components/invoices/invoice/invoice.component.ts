@@ -3,7 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
 import { InvoicesService } from '../../../services/invoices.service';
 import { ClientService } from '../../../services/client.service';
-import { Invoice, Client } from '../../../interfaces';
+import { UserService } from '../../../services/user.service';
+import { Invoice, Client, UserInfo } from '../../../interfaces';
 
 @Component({
   selector: 'app-invoice',
@@ -33,6 +34,11 @@ import { Invoice, Client } from '../../../interfaces';
   </div>
   <div>
     <p><b>De</b></p>
+    <p>{{user?.name}}</p>
+    <p>{{user?.nif}}</p>
+    <p>{{user?.address}}</p>
+    <p>{{user?.phone}}</p>
+    <p>{{user?.website}}</p>
   </div>
 <div>
   <table>
@@ -69,14 +75,17 @@ import { Invoice, Client } from '../../../interfaces';
 export class InvoiceComponent {
   invoice: Invoice | null = null;
   client: Client | null = null;
-  constructor(private route: ActivatedRoute, private invoicesService: InvoicesService, private clientService: ClientService) {
+  user: UserInfo | null = null;
+
+  constructor(private route: ActivatedRoute, private invoicesService: InvoicesService, private clientService: ClientService, private userService: UserService) {
       this.invoicesService.getCurrentInvoice().subscribe(invoice => {
         this.invoice = invoice;
-        console.log(this.invoice);
       });
       this.clientService.getClient(this.invoice?.clientId!).subscribe(client => {
         this.client = client;
-        console.log(this.client);
+      });
+      this.userService.getUser().subscribe(user => {
+        this.user = user;
       });
   }
 }

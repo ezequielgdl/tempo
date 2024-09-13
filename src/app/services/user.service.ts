@@ -3,7 +3,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { SupabaseService } from './supabase.service';
 import { UserInfo } from '../interfaces';
 import { BehaviorSubject, Observable, from, of } from 'rxjs';
-import { map, shareReplay, switchMap, tap, catchError } from 'rxjs/operators';
+import { map, shareReplay, switchMap, tap, catchError, take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +33,9 @@ export class UserService {
       .select()
       .single()
     ).pipe(
-      map(({ data, error }) => {
+      map((response) => {
+        if (!response) throw new Error('No response');
+        const { data, error } = response;
         if (error) throw error;
         return data as UserInfo;
       }),
@@ -53,7 +55,9 @@ export class UserService {
       .select()
       .single()
     ).pipe(
-      map(({ data, error }) => {
+      map((response) => {
+        if (!response) throw new Error('No response');
+        const { data, error } = response;
         if (error) throw error;
         return data as UserInfo;
       }),
@@ -67,6 +71,7 @@ export class UserService {
 
   updateOrCreateUser(userId: string, userData: Partial<UserInfo>): Observable<UserInfo> {
     return this.getUser().pipe(
+      take(1),
       switchMap(existingUser => {
         if (existingUser) {
           return this.updateUser(userId, userData);
@@ -80,18 +85,24 @@ export class UserService {
   private fetchUser(): Observable<UserInfo | null> {
     return from(this.supabase.auth.getUser()).pipe(
       switchMap(({ data: { user } }) => {
-        if (!user) throw new Error('No authenticated user');
+        if (!user) return of(null);
         return this.supabase
           .from('users')
           .select('*')
           .eq('id', user.id)
           .single();
       }),
-      map(({ data, error }) => {
+      map((response) => {
+        if (!response) throw new Error('No response');
+        const { data, error } = response;
         if (error) throw error;
         return data as UserInfo;
       }),
-      tap(user => this.userSubject.next(user)),
+      tap(user => {
+        if (user && !this.userSubject.value) {
+          this.userSubject.next(user);
+        }
+      }),
       catchError(error => {
         console.error('Error fetching user:', error);
         return of(null);

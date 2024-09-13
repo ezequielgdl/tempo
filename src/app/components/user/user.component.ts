@@ -86,7 +86,7 @@ export class UserComponent implements OnInit {
       name: ['', Validators.required],
       address: ['', Validators.required],
       phone: ['', [Validators.required, Validators.pattern(/^\+?[0-9\s-()]+$/)]],
-      website: ['', [Validators.required, Validators.pattern(/^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/)]],
+      website: ['', [Validators.required]],
       nif: ['', [Validators.required]],
     });
   }
@@ -113,15 +113,11 @@ export class UserComponent implements OnInit {
   onSubmit() {
     this.submitError = null;
     this.submitSuccess = false;
-
     if (this.userForm.valid) {
-      console.log('Form is valid');
       if (this.userId) {
         const userData = this.userForm.value;
-        console.log('User ID:', this.userId);
         this.userService.updateOrCreateUser(this.userId, userData).subscribe({
           next: (response) => {
-            console.log('User data saved successfully', response);
             this.userForm.markAsPristine();
             this.submitSuccess = true;
           },
