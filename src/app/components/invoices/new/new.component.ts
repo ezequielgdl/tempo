@@ -12,23 +12,23 @@ import { TimerService } from '../../../services/timer.service';
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule],
   template: `
-    <form [formGroup]="invoiceForm" (ngSubmit)="onSubmit()">
-      <div>
-        <div>
-          <label>
-            <input type="radio" formControlName="invoiceType" value="all">
+    <form [formGroup]="invoiceForm" (ngSubmit)="onSubmit()" class="max-w-md mx-auto p-4 bg-off-white rounded-lg shadow-md my-10">
+      <div class="mb-6">
+        <div class="mb-2">
+          <label class="flex items-center text-dark-gray">
+            <input type="radio" formControlName="invoiceType" value="all" class="mr-2">
             Todas las horas sin facturar
           </label>
         </div>
         <div>
-          <label>
-            <input type="radio" formControlName="invoiceType" value="specific">
+          <label class="flex items-center text-dark-gray">
+            <input type="radio" formControlName="invoiceType" value="specific" class="mr-2">
             Horas sin facturar de
           </label>
         </div>
       </div>
-      <div>
-        <select formControlName="timePeriod">
+      <div class="mb-6">
+        <select formControlName="timePeriod" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
           <option value="thisMonth">Este mes</option>
           <option value="lastMonth">El mes pasado</option>
           <option value="thisQuarter">Este cuatrimestre</option>
@@ -39,16 +39,16 @@ import { TimerService } from '../../../services/timer.service';
         </select>
       </div>
       @if (invoiceForm.get('timePeriod')?.value === 'custom') {
-        <div>
-          <label for="startDate">Desde:</label>
-          <input type="date" id="startDate" formControlName="startDate">
+        <div class="mb-4">
+          <label for="startDate" class="block text-dark-gray font-bold mb-2">Desde:</label>
+          <input type="date" id="startDate" formControlName="startDate" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
         </div>
-        <div>
-          <label for="endDate">Hasta:</label>
-          <input type="date" id="endDate" formControlName="endDate">
+        <div class="mb-6">
+          <label for="endDate" class="block text-dark-gray font-bold mb-2">Hasta:</label>
+          <input type="date" id="endDate" formControlName="endDate" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
         </div>
       }
-      <button class="button-base button-primary" type="submit">Generar factura</button>
+      <button class="button-base button-primary w-full sm:w-auto" type="submit">Generar factura</button>
     </form>
   `,
   styles: ``

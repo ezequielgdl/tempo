@@ -7,24 +7,33 @@ import { Client } from '../../../interfaces';
   standalone: true,
   imports: [FormsModule],
   template: `
-    <div class="modal">
-      <div class="modal-content">
-        <h2>Nuevo Timer</h2>
-        <label for="client">Cliente:</label>
-        <select id="client" [(ngModel)]="selectedClient">
-          @for (client of clients; track client.id) {
-            <option [ngValue]="client">{{client.name}}</option>
-          }
-        </select>
+    <div class="fixed inset-0 z-10 overflow-y-auto bg-gray-500 bg-opacity-75 flex items-center justify-center">
+      <div class="bg-off-white rounded-lg shadow-xl p-6 sm:p-8 w-full max-w-md mx-4">
+        <h2 class="text-2xl font-bold mb-6 text-dark-gray">Nuevo Timer</h2>
+        
+        <div class="mb-4">
+          <label for="client" class="block text-dark-gray font-bold mb-2">Cliente:</label>
+          <select id="client" [(ngModel)]="selectedClient" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+            @for (client of clients; track client.id) {
+              <option [ngValue]="client">{{client.name}}</option>
+            }
+          </select>
+        </div>
 
-        <label for="commentary">Comentario (optional):</label>
-        <textarea id="commentary" [(ngModel)]="commentary"></textarea>
+        <div class="mb-4">
+          <label for="commentary" class="block text-dark-gray font-bold mb-2">Comentario (opcional):</label>
+          <textarea id="commentary" [(ngModel)]="commentary" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" rows="3"></textarea>
+        </div>
 
-        <label for="time">Tiempo (HH:MM):</label>
-        <input type="text" id="time" [(ngModel)]="time" placeholder="00:00" pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$">
+        <div class="mb-6">
+          <label for="time" class="block text-dark-gray font-bold mb-2">Tiempo (HH:MM):</label>
+          <input type="text" id="time" [(ngModel)]="time" placeholder="00:00" pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+        </div>
 
-        <button class="button-base button-primary" (click)="saveEntry()">Empezar</button>
-        <button class="button-base button-secondary" (click)="closeModal()">Cancelar</button>
+        <div class="flex justify-between">
+          <button class="button-base button-primary w-full sm:w-auto mr-2" (click)="saveEntry()">Empezar</button>
+          <button class="button-base button-secondary w-full sm:w-auto" (click)="closeModal()">Cancelar</button>
+        </div>
       </div>
     </div>
   `,

@@ -16,43 +16,49 @@ registerLocaleData(localeEs);
   standalone: true,
   imports: [TimerFormComponent, FormsModule, DatePipe],
   template: `
-    <button class="button-base button-primary" (click)="openModal()">+</button>
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 my-10">
+      <h1 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-dark-gray">Timer</h1>
 
-    @if (showModal) {
-      <app-timer-form
-        [clients]="clients"
-        (close)="closeModal()"
-        (save)="saveEntry($event)"
-      ></app-timer-form>
-    }
+      <button class="button-base button-primary w-full sm:w-auto mb-4 sm:mb-6" (click)="openModal()">+ Nuevo Timer</button>
 
-    @for (timer of timers; track timer.id) {
-      <div>
-        <p>{{ timer.clientName }}</p>
+      @if (showModal) {
+        <app-timer-form
+          [clients]="clients"
+          (close)="closeModal()"
+          (save)="saveEntry($event)"
+        ></app-timer-form>
+      }
 
-        @if (timer.commentary) {
-          <p>{{ timer.commentary }}</p>
-        }
-        <div>{{ timer.formattedTime }}</div>
-        @if (!this.isEditing) {
-          @if (timer.isRunning) {
-            <button class="button-base button-secondary" (click)="stopTimer(timer)">Stop Timer</button>
-          } @else {
-            <button class="button-base button-primary" (click)="startTimer(timer)">Start Timer</button>
+      @for (timer of timers; track timer.id) {
+        <div class="bg-off-white p-4 rounded-lg shadow-md mb-4">
+          <p class="text-lg font-semibold text-dark-gray mb-2">{{ timer.clientName }}</p>
+
+          @if (timer.commentary) {
+            <p class="text-sm text-light-gray mb-2">{{ timer.commentary }}</p>
           }
-          <button class="button-base button-primary" (click)="editTimer(timer)">Edit Timer</button>
-          <button class="button-base button-secondary" (click)="deleteTimer(timer)">Delete Timer</button>
-        }
+          <div class="text-xl font-bold text-primary mb-3">{{ timer.formattedTime }}</div>
+          @if (!this.isEditing) {
+            <div class="flex flex-wrap gap-2">
+              @if (timer.isRunning) {
+                <button class="button-base button-secondary" (click)="stopTimer(timer)">Stop Timer</button>
+              } @else {
+                <button class="button-base button-primary" (click)="startTimer(timer)">Start Timer</button>
+              }
+              <button class="button-base button-primary" (click)="editTimer(timer)">Edit Timer</button>
+              <button class="button-base button-secondary" (click)="deleteTimer(timer)">Delete Timer</button>
+            </div>
+          }
 
-        @if (this.isEditing) {
-          <div>
-            <input [(ngModel)]="timer.formattedTime" placeholder="HH:MM" pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$">
-            <button class="button-base button-primary" (click)="updateTimer(timer)">Update</button>
-            <button class="button-base button-secondary" (click)="cancelEdit(timer)">Cancel</button>
-          </div>
-        }
-      </div>
-    }
+          @if (this.isEditing) {
+            <div class="flex items-center gap-2 mt-2">
+              <input [(ngModel)]="timer.formattedTime" placeholder="HH:MM" pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$" class="border rounded px-2 py-1">
+              <button class="button-base button-primary" (click)="updateTimer(timer)">Update</button>
+              <button class="button-base button-secondary" (click)="cancelEdit(timer)">Cancel</button>
+            </div>
+          }
+        </div>
+      }
+    </div>
   `,
   styles: ``
 })

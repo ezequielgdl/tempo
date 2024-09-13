@@ -9,35 +9,36 @@ import { AuthService } from '../../services/auth-service.service';
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule],
   template: `
-    <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-      <div>
-        <label for="name">Name:</label>
-        <input id="name" type="text" formControlName="name">
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="max-w-md mx-auto p-4 bg-off-white rounded-lg shadow-md my-10">
+      <h1 class="text-2xl font-bold mb-4 text-dark-gray">Perfil de Usuario</h1>
+      <div class="mb-4">
+        <label for="name" class="block text-dark-gray font-bold mb-2">Nombre:</label>
+        <input id="name" type="text" formControlName="name" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
       </div>
-      <div>
-        <label for="address">Address:</label>
-        <input id="address" type="text" formControlName="address">
+      <div class="mb-4">
+        <label for="address" class="block text-dark-gray font-bold mb-2">Dirección:</label>
+        <input id="address" type="text" formControlName="address" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
       </div>
-      <div>
-        <label for="phone">Phone:</label>
-        <input id="phone" type="tel" formControlName="phone">
+      <div class="mb-4">
+        <label for="phone" class="block text-dark-gray font-bold mb-2">Teléfono:</label>
+        <input id="phone" type="tel" formControlName="phone" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
       </div>
-      <div>
-        <label for="website">Website:</label>
-        <input id="website" type="url" formControlName="website">
+      <div class="mb-4">
+        <label for="website" class="block text-dark-gray font-bold mb-2">Sitio web:</label>
+        <input id="website" type="url" formControlName="website" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
       </div>
-      <div>
-        <label for="nif">NIF:</label>
-        <input id="nif" type="text" formControlName="nif">
+      <div class="mb-6">
+        <label for="nif" class="block text-dark-gray font-bold mb-2">NIF:</label>
+        <input id="nif" type="text" formControlName="nif" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
       </div>
-      <button type="submit">Submit</button>
+      <button type="submit" class="button-base button-primary w-full sm:w-auto">Guardar</button>
     </form>
 
       @if (submitError) {
-        <p class="error">{{ submitError }}</p>
+        <p class="text-red-500 mt-4">{{ submitError }}</p>
       }
       @if (submitSuccess) {
-        <p class="success">User data saved successfully!</p>
+        <p class="text-green-500 mt-4">¡Datos de usuario guardados exitosamente!</p>
       }
   `,
   styles: `

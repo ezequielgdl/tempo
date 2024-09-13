@@ -9,7 +9,7 @@ import { AuthService } from '../../services/auth-service.service';
   imports: [RouterLink, CommonModule],
   template: `
     <nav class="flex items-center justify-between bg-off-white px-6 py-4">
-      <div class="text-2xl font-bold font-pangaia">
+      <div class="text-2xl font-bold font-pangaia text-primary cursor-pointer" (click)="navigateToHome()">
         Tempo.
       </div>
       <button (click)="toggleMenu()" class="md:hidden">
@@ -40,5 +40,9 @@ export class NavbarComponent {
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  navigateToHome() {
+    this.router.navigate(['/']);
   }
 }

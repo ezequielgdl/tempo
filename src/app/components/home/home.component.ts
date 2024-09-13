@@ -8,14 +8,18 @@ import { map } from 'rxjs';
   standalone: true,
   imports: [RouterLink],
   template: `
-    <h1>
-      Tempo.
-    </h1>
-    <p>Asistente para autónomos.</p>
-    @if (!isLoggedIn) {
-      <button routerLink="/login">Login</button>
-      <button routerLink="/signup">Signup</button>
-    } 
+    <div class="flex flex-col items-center justify-center min-h-screen text-center px-4 bg-primary">
+      <h1 class="text-4xl md:text-6xl font-bold mb-4 font-pangaia text-off-white">
+        Tempo.
+      </h1>
+      <p class="text-xl md:text-2xl mb-8 text-off-white">Asistente para autónomos.</p>
+      @if (!isLoggedIn) {
+        <div class="space-x-4">
+          <button routerLink="/login" class="button-base button-primary">Login</button>
+          <button routerLink="/signup" class="button-base button-secondary">Signup</button>
+        </div>
+      } 
+    </div>
   `,
   styles: ``
 })
