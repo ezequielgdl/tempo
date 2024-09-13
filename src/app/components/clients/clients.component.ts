@@ -10,7 +10,7 @@ import { ClientService } from '../../services/client.service';
   template: `
     <h1>Clientes</h1>
 
-    <button class="" routerLink="/clients/new">Nuevo Cliente</button>
+    <button class="button-base button-primary" routerLink="/clients/new">Nuevo Cliente</button>
 
     @if (clients.length === 0) {
       <p>No clients found.</p>
@@ -19,8 +19,8 @@ import { ClientService } from '../../services/client.service';
             @for (client of clients; track client) {
               <li class="">
                 <span>{{ client.name }}</span>
-                <button [routerLink]="['/clients', client.id, 'edit']">Editar</button>
-                <button (click)="deleteClient(client.id)">Eliminar</button>
+                <button class="button-base button-primary" [routerLink]="['/clients', client.id, 'edit']">Editar</button>
+                <button class="button-base button-secondary" (click)="deleteClient(client.id)">Eliminar</button>
               </li>
             }
         </ul>

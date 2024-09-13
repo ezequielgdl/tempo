@@ -12,7 +12,7 @@ import { ClientService } from '../../services/client.service';
   template: `
     <h1>Facturas</h1>
     <div class="dropdown">
-      <button (click)="toggleDropdown()">Nueva Factura</button>
+      <button class="button-base button-primary" (click)="toggleDropdown()">Nueva Factura</button>
       @if (isDropdownOpen) {
       <div class="dropdown-content">
         <select [(ngModel)]="selectedClientId" name="clientSelect">
@@ -21,7 +21,7 @@ import { ClientService } from '../../services/client.service';
             <option [value]="client.id">{{ client.name }}</option>
           }
         </select>
-        <button routerLink="/invoices/{{ selectedClientId }}/new" [disabled]="!selectedClientId">Crear</button>
+        <button class="button-base button-primary" routerLink="/invoices/{{ selectedClientId }}/new" [disabled]="!selectedClientId">Crear</button>
       </div>}
     </div>
   `,

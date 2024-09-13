@@ -76,16 +76,16 @@ import { InvoicesService } from '../../../services/invoices.service';
         <label>
           {{ timer.elapsedTime * timer.pricePerHour | currency:invoiceForm.get('currency')?.value }}
         </label>
-        <button (click)="removeTimer(timer)">X</button>
+        <button class="button-base button-secondary" (click)="removeTimer(timer)">X</button>
       </div>
     }
-    <button (click)="addEmptyTimer()">Agregar Item</button>
+    <button class="button-base button-primary" (click)="addEmptyTimer()">Agregar Item</button>
     <div>Subtotal: {{ subtotal | currency:invoiceForm.get('currency')?.value }}</div>
     <div>IVA ({{ invoiceForm.get('iva')?.value }}%): {{ ivaAmount | currency:invoiceForm.get('currency')?.value }}</div>
     <div>IRPF ({{ invoiceForm.get('irpf')?.value }}%): -{{ irpfAmount | currency:invoiceForm.get('currency')?.value }}</div>
     <div>Total Invoice: {{ totalInvoice | currency:invoiceForm.get('currency')?.value }}</div>
-    <button type="submit" form="invoiceForm">Guardar</button>
-    <button (click)="cancelInvoice()">Cancelar</button>
+    <button class="button-base button-primary" type="submit" form="invoiceForm">Guardar</button>
+    <button class="button-base button-secondary" (click)="cancelInvoice()">Cancelar</button>
   `,
   styles: [`
     form div { margin-bottom: 10px; }

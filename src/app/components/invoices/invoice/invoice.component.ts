@@ -11,63 +11,71 @@ import { Invoice, Client, UserInfo } from '../../../interfaces';
   standalone: true,
   imports: [CurrencyPipe],
   template: `
-<div>
-  <h1>FACTURA</h1>
-  <p>Número de factura: {{invoice?.invoiceNumber}}</p>
-  <div>
-    <p>Fecha de emisión:</p>
-    <p>{{invoice?.issueDate}}</p>
-  </div>
-  @if (invoice?.dueDate) {
-  <div>
-    <p>Fecha de devengo:</p>
-    <p>{{invoice?.dueDate}}</p>
-  </div>
-  }
-  <div>
-    <p><b>Para</b></p>
-    <p>{{client?.name}}</p>
-    @if (client?.CIF) {
-    <p>{{client?.CIF}}</p>
+<div class="max-w-4xl mx-auto my-8 bg-white shadow-sm rounded-sm border border-gray-200 p-8">
+  <div class="text-center mb-6">
+    <h1 class="text-3xl font-bold mb-2">FACTURA</h1>
+    <p class="text-lg">Número de factura: {{invoice?.invoiceNumber}}</p>
+    <p class="text-sm">Fecha de emisión: {{invoice?.issueDate}}</p>
+    @if (invoice?.dueDate) {
+    <p class="text-sm">Fecha de devengo: {{invoice?.dueDate}}</p>
     }
-    <p>{{client?.address}}</p>
   </div>
-  <div>
-    <p><b>De</b></p>
-    <p>{{user?.name}}</p>
-    <p>{{user?.nif}}</p>
-    <p>{{user?.address}}</p>
-    <p>{{user?.phone}}</p>
-    <p>{{user?.website}}</p>
+  
+  <div class="flex justify-between mb-8">
+    <div class="w-1/2">
+      <div class="mb-4">
+        <p class="font-bold mb-2">Para</p>
+        <p>{{client?.name}}</p>
+        @if (client?.CIF) {
+        <p>{{client?.CIF}}</p>
+        }
+        <p>{{client?.address}}</p>
+      </div>
+    </div>
+    
+    <div class="w-1/2 text-right">
+      <p class="font-bold mb-2">De</p>
+      <p>{{user?.name}}</p>
+      <p>{{user?.nif}}</p>
+      <p>{{user?.address}}</p>
+      <p>{{user?.phone}}</p>
+      <p>{{user?.website}}</p>
+    </div>
   </div>
-<div>
-  <table>
-    <thead>
-      <tr>
-        <th>Concepto</th>
-        <th>Horas</th>
-        <th>Precio por hora</th>
-        <th>Importe</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (timer of invoice?.timers; track timer.tempId) {
-        <tr>
-          <td>{{ timer.commentary }}</td>
-          <td>{{ timer.elapsedTime }}</td>
-          <td>{{ timer.pricePerHour | currency:invoice?.currency:'symbol':'' : 'es' }}</td>
-          <td>{{ timer.elapsedTime * timer.pricePerHour | currency:invoice?.currency:'symbol':'': 'es' }}</td>
+
+  <div class="mb-8">
+    <table class="w-full border-collapse">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="border p-2 text-left">Concepto</th>
+          <th class="border p-2 text-right">Horas</th>
+          <th class="border p-2 text-right">Precio por hora</th>
+          <th class="border p-2 text-right">Importe</th>
         </tr>
+      </thead>
+      <tbody>
+        @for (timer of invoice?.timers; track timer.tempId) {
+          <tr>
+            <td class="border p-2">{{ timer.commentary }}</td>
+            <td class="border p-2 text-right">{{ timer.elapsedTime }}</td>
+            <td class="border p-2 text-right">{{ timer.pricePerHour | currency:invoice?.currency:'symbol':'' : 'es' }}</td>
+            <td class="border p-2 text-right">{{ timer.elapsedTime * timer.pricePerHour | currency:invoice?.currency:'symbol':'': 'es' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex justify-end">
+    <div class="w-1/3">
+      <p class="flex justify-between mb-2"><span>Subtotal:</span> <span>{{invoice?.subtotal | currency:invoice?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
+      <p class="flex justify-between mb-2"><span>IVA:</span> <span>{{invoice?.iva | currency:invoice?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
+      @if (invoice?.irpf! > 0) {
+      <p class="flex justify-between mb-2"><span>IRPF:</span> <span>-{{invoice?.irpf | currency:invoice?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
       }
-    </tbody>
-  </table>
-  <p>Subtotal: {{invoice?.subtotal | currency:invoice?.currency:'symbol':'1.2-2' : 'es' }}</p>
-  <p>IVA: {{invoice?.iva | currency:invoice?.currency:'symbol':'1.2-2' : 'es' }}</p>
-  @if (invoice?.irpf! > 0) {
-  <p>IRPF: -{{invoice?.irpf | currency:invoice?.currency:'symbol':'1.2-2' : 'es' }}</p>
-  }
-  <p>Total: {{invoice?.total | currency:invoice?.currency:'symbol':'1.2-2' : 'es' }}</p>
-</div>
+      <p class="flex justify-between font-bold text-lg"><span>Total:</span> <span>{{invoice?.total | currency:invoice?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
+    </div>
+  </div>
 </div>
   `,
   styles: ``

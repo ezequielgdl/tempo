@@ -16,7 +16,7 @@ registerLocaleData(localeEs);
   standalone: true,
   imports: [TimerFormComponent, FormsModule, DatePipe],
   template: `
-    <button (click)="openModal()">+</button>
+    <button class="button-base button-primary" (click)="openModal()">+</button>
 
     @if (showModal) {
       <app-timer-form
@@ -36,19 +36,19 @@ registerLocaleData(localeEs);
         <div>{{ timer.formattedTime }}</div>
         @if (!this.isEditing) {
           @if (timer.isRunning) {
-            <button (click)="stopTimer(timer)">Stop Timer</button>
+            <button class="button-base button-secondary" (click)="stopTimer(timer)">Stop Timer</button>
           } @else {
-            <button (click)="startTimer(timer)">Start Timer</button>
+            <button class="button-base button-primary" (click)="startTimer(timer)">Start Timer</button>
           }
-          <button (click)="editTimer(timer)">Edit Timer</button>
-          <button (click)="deleteTimer(timer)">Delete Timer</button>
+          <button class="button-base button-primary" (click)="editTimer(timer)">Edit Timer</button>
+          <button class="button-base button-secondary" (click)="deleteTimer(timer)">Delete Timer</button>
         }
 
         @if (this.isEditing) {
           <div>
             <input [(ngModel)]="timer.formattedTime" placeholder="HH:MM" pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$">
-            <button (click)="updateTimer(timer)">Update</button>
-            <button (click)="cancelEdit(timer)">Cancel</button>
+            <button class="button-base button-primary" (click)="updateTimer(timer)">Update</button>
+            <button class="button-base button-secondary" (click)="cancelEdit(timer)">Cancel</button>
           </div>
         }
       </div>

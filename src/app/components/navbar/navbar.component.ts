@@ -16,7 +16,7 @@ import { AuthService } from '../../services/auth-service.service';
         <li><a routerLink="/timer">Timer</a></li>
         <li><a routerLink="/invoices">Facturas</a></li>
         <li><a routerLink="/user">Usuario</a></li>
-        <li><button (click)="logout()">Sign Out</button></li>
+        <li><button (click)="logout()" class="button-base button-primary">Sign Out</button></li>
       </ul>
     </nav>
   `,

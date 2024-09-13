@@ -50,8 +50,8 @@ import { ClientService } from '../../../services/client.service';
         }
       </div>
 
-      <button type="submit" [disabled]="clientForm.invalid">Save</button>
-      <button type="button" routerLink="/clients">Cancel</button>
+      <button class="button-base button-primary" type="submit" [disabled]="clientForm.invalid">Save</button>
+      <button class="button-base button-secondary" type="button" routerLink="/clients">Cancel</button>
     </form>
   `,
   styles: ``

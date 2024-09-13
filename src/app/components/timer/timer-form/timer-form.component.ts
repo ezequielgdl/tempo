@@ -23,8 +23,8 @@ import { Client } from '../../../interfaces';
         <label for="time">Tiempo (HH:MM):</label>
         <input type="text" id="time" [(ngModel)]="time" placeholder="00:00" pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$">
 
-        <button (click)="saveEntry()">Empezar</button>
-        <button (click)="closeModal()">Cancelar</button>
+        <button class="button-base button-primary" (click)="saveEntry()">Empezar</button>
+        <button class="button-base button-secondary" (click)="closeModal()">Cancelar</button>
       </div>
     </div>
   `,

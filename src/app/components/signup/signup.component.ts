@@ -20,7 +20,7 @@ import { AuthService } from '../../services/auth-service.service';
           <label for="password">Password:</label>
           <input type="password" id="password" formControlName="password" required>
         </div>
-        <button type="submit" [disabled]="!signupForm.valid">Sign Up</button>
+        <button class="button-base button-primary" type="submit" [disabled]="!signupForm.valid">Sign Up</button>
       </form>
     </div>
   `,

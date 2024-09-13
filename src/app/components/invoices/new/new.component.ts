@@ -48,7 +48,7 @@ import { TimerService } from '../../../services/timer.service';
           <input type="date" id="endDate" formControlName="endDate">
         </div>
       }
-      <button type="submit">Generar factura</button>
+      <button class="button-base button-primary" type="submit">Generar factura</button>
     </form>
   `,
   styles: ``
