@@ -16,7 +16,7 @@ module.exports = {
       },
       fontFamily: {
         'pangaia': ['PP Pangaia', 'sans-serif'],
-        'roboto': ['Roboto', 'sans-serif'],
+        'neue-montreal': ['PP Neue Montreal', 'sans-serif'],
       },
     },
   },

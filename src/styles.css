@@ -4,7 +4,8 @@
 @tailwind utilities;
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'PP Neue Montreal', sans-serif;
+    font-weight: 500;
 }
 
 .button-base {
@@ -18,3 +19,4 @@ body {
 .button-secondary {
     @apply bg-primary-dark text-white hover:bg-dark-gray focus:ring-4 focus:ring-gray-300;
 }
+

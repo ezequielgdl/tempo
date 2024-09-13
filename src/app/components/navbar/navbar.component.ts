@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
-import { AuthService } from '../../services/auth-service.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, MatIconModule],
   template: `
     <nav class="flex items-center justify-between bg-off-white px-6 py-4">
       <div class="text-2xl font-bold font-pangaia text-primary cursor-pointer" (click)="navigateToHome()">
@@ -22,24 +22,18 @@ import { AuthService } from '../../services/auth-service.service';
         <li><a routerLink="/timer" class="block text-dark-gray hover:text-primary transition-colors">Timer</a></li>
         <li><a routerLink="/invoices" class="block text-dark-gray hover:text-primary transition-colors">Facturas</a></li>
         <li><a routerLink="/user" class="block text-dark-gray hover:text-primary transition-colors">Usuario</a></li>
-        <li><button (click)="logout()" class="button-base button-primary w-full md:w-auto">Sign Out</button></li>
       </ul>
     </nav>
   `,
   styles: ``
 })
 export class NavbarComponent {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private router: Router) {}
 
   isMenuOpen = false;
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
-  }
-
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
   }
 
   navigateToHome() {
