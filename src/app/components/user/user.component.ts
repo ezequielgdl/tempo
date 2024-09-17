@@ -119,8 +119,14 @@ export class UserComponent implements OnInit {
   }
 
   signOut() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        console.error('Error signing out', error);
+      }
+    });
   }
 }
 

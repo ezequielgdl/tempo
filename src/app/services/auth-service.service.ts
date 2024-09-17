@@ -9,12 +9,12 @@ import { SupabaseService } from './supabase.service';
 })
 export class AuthService {
   private supabase: SupabaseClient;
-  private currentUserSubject: BehaviorSubject<User | null>;
-  public currentUser$: Observable<User | null>;
+  private currentUserSubject: BehaviorSubject<User | null | undefined>;
+  public currentUser$: Observable<User | null | undefined>;
 
   constructor(private supabaseService: SupabaseService) {
     this.supabase = this.supabaseService.getClient();
-    this.currentUserSubject = new BehaviorSubject<User | null>(null);
+    this.currentUserSubject = new BehaviorSubject<User | null | undefined>(undefined);
     this.currentUser$ = this.currentUserSubject.asObservable();
     this.initializeAuthState();
   }
@@ -30,7 +30,7 @@ export class AuthService {
     });
   }
 
-  getCurrentUser(): Observable<User | null> {
+  getCurrentUser(): Observable<User | null | undefined> {
     return this.currentUser$;
   }
 
@@ -58,7 +58,13 @@ export class AuthService {
 
   logout(): Observable<void> {
     return from(this.supabase.auth.signOut()).pipe(
-      tap(() => this.currentUserSubject.next(null)),
+      tap(() => {
+        this.currentUserSubject.next(null);
+        // Emit the updated auth state immediately
+        this.supabase.auth.onAuthStateChange((_, session) => {
+          this.currentUserSubject.next(session?.user ?? null);
+        });
+      }),
       catchError((error) => {
         console.error('Error logging out:', error);
         return of(void 0);

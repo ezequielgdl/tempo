@@ -16,7 +16,7 @@ import { AsyncPipe } from '@angular/common';
       <p class="text-xl md:text-2xl mb-8 text-off-white">Asistente para autónomos.</p>
       @if (!(isLoggedIn$ | async)) {
         <div class="space-x-4">
-          <button routerLink="/login" class="button-base button-primary">Login</button>
+          <button routerLink="/login" class="button-base button-secondary">Login</button>
           <button routerLink="/signup" class="button-base button-secondary">Signup</button>
         </div>
       } 
