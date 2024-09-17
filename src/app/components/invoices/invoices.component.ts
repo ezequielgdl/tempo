@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { AsyncPipe } from '@angular/common';
+import { Observable } from 'rxjs';
 
 import { Client } from '../../interfaces';
 import { ClientService } from '../../services/client.service';
@@ -8,7 +10,7 @@ import { ClientService } from '../../services/client.service';
 @Component({
   selector: 'app-invoices',
   standalone: true,
-  imports: [FormsModule, RouterModule],
+  imports: [FormsModule, RouterModule, AsyncPipe],
   template: `
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 my-10">
       <h1 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-dark-gray">Facturas</h1>
@@ -18,7 +20,7 @@ import { ClientService } from '../../services/client.service';
         <div class="absolute z-10 mt-2 w-full sm:w-64 bg-white rounded-md shadow-lg">
           <select [(ngModel)]="selectedClientId" name="clientSelect" class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
             <option value="">Seleccionar cliente</option>
-            @for (client of clients; track client.id) {
+            @for (client of clients$ | async; track client.id) {
               <option [value]="client.id">{{ client.name }}</option>
             }
           </select>
@@ -32,16 +34,14 @@ import { ClientService } from '../../services/client.service';
 export class InvoicesComponent {
   isDropdownOpen = false;
   selectedClientId = '';
-  clients: Client[] = [];
+  clients$: Observable<Client[]>;
 
-  constructor(private clientService: ClientService) {}
-
+  constructor(private clientService: ClientService) {
+    this.clients$ = this.clientService.getClients();
+  }
 
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
-    this.clientService.getClients().subscribe(clients => {
-      this.clients = clients;
-    });
   }
 }
 

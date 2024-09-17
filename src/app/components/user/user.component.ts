@@ -5,8 +5,7 @@ import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth-service.service';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-
-
+import { Observable, switchMap, of, catchError, map } from 'rxjs';
 
 @Component({
   selector: 'app-user',
@@ -57,7 +56,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class UserComponent implements OnInit {
   userForm: FormGroup;
-  userId: string | null = null;
+  userId$: Observable<string | null>;
   submitError: string | null = null;
   submitSuccess: boolean = false;
 
@@ -69,23 +68,25 @@ export class UserComponent implements OnInit {
       website: ['', [Validators.required]],
       nif: ['', [Validators.required]],
     });
+
+    this.userId$ = this.authService.getCurrentUser().pipe(
+      map(user => user?.id || null)
+    );
+
+    this.submitError = null;
+    this.submitSuccess = false;
   }
 
   ngOnInit() {
-    this.authService.getCurrentUser().subscribe(user => {
-      if (user?.id) {
-        this.userId = user.id;
-        this.userService.getUser().subscribe({
-          next: (userData) => {
-            if (userData) {
-              this.userForm.patchValue(userData);
-            }
-          },
-          error: (error) => {
-            console.error('Error fetching user data:', error);
-            // User data doesn't exist, form will remain empty for new user
-          }
-        });
+    this.userId$.pipe(
+      switchMap(userId => userId ? this.userService.getUser() : of(null)),
+      catchError(error => {
+        console.error('Error fetching user data:', error);
+        return of(null);
+      })
+    ).subscribe(userData => {
+      if (userData) {
+        this.userForm.patchValue(userData);
       }
     });
   }
@@ -93,22 +94,25 @@ export class UserComponent implements OnInit {
   onSubmit() {
     this.submitError = null;
     this.submitSuccess = false;
+
     if (this.userForm.valid) {
-      if (this.userId) {
-        const userData = this.userForm.value;
-        this.userService.updateOrCreateUser(this.userId, userData).subscribe({
-          next: (response) => {
-            this.userForm.markAsPristine();
-            this.submitSuccess = true;
-          },
-          error: (error) => {
-            console.error('Error saving user data', error);
-            this.submitError = 'An error occurred while saving user data. Please try again.';
+      this.userId$.pipe(
+        switchMap(userId => {
+          if (!userId) {
+            throw new Error('User ID is missing. Please try logging in again.');
           }
-        });
-      } else {
-        this.submitError = 'User ID is missing. Please try logging in again.';
-      }
+          return this.userService.updateOrCreateUser(userId, this.userForm.value);
+        })
+      ).subscribe({
+        next: () => {
+          this.userForm.markAsPristine();
+          this.submitSuccess = true;
+        },
+        error: (error) => {
+          console.error('Error saving user data', error);
+          this.submitError = 'An error occurred while saving user data. Please try again.';
+        }
+      });
     } else {
       this.submitError = 'Please fill in all required fields correctly.';
     }

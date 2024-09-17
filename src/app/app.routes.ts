@@ -19,7 +19,7 @@ export const routes: Routes = [
   { path: 'clients/new', component: NewComponent, canActivate: [AuthGuard] },
   { path: 'timer', component: TimerComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent, canActivate: [AuthGuard] },
-  { path: 'signup', component: SignupComponent, canActivate: [AuthGuard] },
+  { path: 'signup', component: SignupComponent },
   { path: 'clients/:id/edit', component: EditComponent, canActivate: [AuthGuard] },
   { path: 'invoices', component: InvoicesComponent, canActivate: [AuthGuard] },
   { path: 'invoices/:id/new', component: NewInvoiceComponent, canActivate: [AuthGuard] },

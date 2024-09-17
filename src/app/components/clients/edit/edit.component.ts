@@ -73,7 +73,8 @@ export class EditComponent implements OnInit, OnDestroy {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
-      address: ['', Validators.required]
+      address: ['', Validators.required],
+      pricePerHour: [0, Validators.required]
     });
   }
 

@@ -9,18 +9,18 @@ import { AuthService } from '../../services/auth-service.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
-    <div>
-      <h2>Sign Up</h2>
-      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+    <div class="max-w-md mx-auto my-8 p-6 bg-white shadow-sm rounded-sm border border-gray-200">
+      <h2 class="text-2xl font-bold mb-6 text-center">Sign Up</h2>
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-4">
         <div>
-          <label for="email">Email:</label>
-          <input type="email" id="email" formControlName="email" required>
+          <label for="email" class="block text-dark-gray font-bold mb-2">Email:</label>
+          <input type="email" id="email" formControlName="email" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
         </div>
         <div>
-          <label for="password">Password:</label>
-          <input type="password" id="password" formControlName="password" required>
+          <label for="password" class="block text-dark-gray font-bold mb-2">Password:</label>
+          <input type="password" id="password" formControlName="password" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
         </div>
-        <button class="button-base button-primary" type="submit" [disabled]="!signupForm.valid">Sign Up</button>
+        <button class="w-full px-4 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50" type="submit" [disabled]="!signupForm.valid">Sign Up</button>
       </form>
     </div>
   `,

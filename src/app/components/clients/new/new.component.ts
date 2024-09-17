@@ -66,22 +66,22 @@ export class NewComponent {
     private fb: FormBuilder,
     private router: Router,
     private clientService: ClientService,
-    private authService: AuthService // Add this
+    private authService: AuthService
   ) {
-    this.clientForm = new FormGroup({
-      name: new FormControl('', Validators.required),
-      email: new FormControl('', [Validators.required, Validators.email]),
-      phone: new FormControl('', Validators.required),
-      address: new FormControl('', Validators.required),
-      pricePerHour: new FormControl(0, Validators.required)
+    this.clientForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', Validators.required],
+      address: ['', Validators.required],
+      pricePerHour: [0, Validators.required]
     });
   }
 
-  async onSubmit() {
+  onSubmit() {
     if (this.clientForm.valid) {
-      try {
-        const user = await firstValueFrom(this.authService.getCurrentUser());
+      this.authService.getCurrentUser().subscribe(user => {
         if (!user) {
+          console.error('No authenticated user');
           return;
         }
 
@@ -91,19 +91,22 @@ export class NewComponent {
           phone: this.clientForm.controls['phone'].value,
           address: this.clientForm.controls['address'].value,
           user_id: user.id,
-          pricePerHour: 0
+          pricePerHour: this.clientForm.controls['pricePerHour'].value
         };
 
-        const createdClient = await firstValueFrom(this.clientService.createClient(newClient));
-        
-        if (createdClient && createdClient.id) {
-          this.router.navigate(['/clients']);
-        } else {
-          console.error('Error creating client: Client not created');
-        }
-      } catch (error) {
-        console.error('Error creating client:', error);
-      }
-    } 
+        this.clientService.createClient(newClient).subscribe({
+          next: (createdClient) => {
+            if (createdClient && createdClient.id) {
+              this.router.navigate(['/clients']);
+            } else {
+              console.error('Error creating client: Client not created');
+            }
+          },
+          error: (error) => {
+            console.error('Error creating client:', error);
+          }
+        });
+      });
+    }
   }
 }

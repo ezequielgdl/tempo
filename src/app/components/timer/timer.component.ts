@@ -2,7 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
-import { interval, Subscription } from 'rxjs';
+import { interval, Subscription, Observable } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
 
 import { TimerFormComponent } from './timer-form/timer-form.component';
 import { ClientService } from '../../services/client.service';
@@ -14,7 +15,7 @@ registerLocaleData(localeEs);
 @Component({
   selector: 'app-timer',
   standalone: true,
-  imports: [TimerFormComponent, FormsModule, DatePipe],
+  imports: [TimerFormComponent, FormsModule, DatePipe, AsyncPipe],
   template: `
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 my-10">
       <h1 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-dark-gray">Timer</h1>
@@ -23,7 +24,7 @@ registerLocaleData(localeEs);
 
       @if (showModal) {
         <app-timer-form
-          [clients]="clients"
+          [clients]="(clients$ | async) ?? []"
           (close)="closeModal()"
           (save)="saveEntry($event)"
         ></app-timer-form>
@@ -65,12 +66,13 @@ registerLocaleData(localeEs);
 export class TimerComponent implements OnInit, OnDestroy {
   showModal = false;
   isEditing = false;
-  clients: Client[] = [];
+  clients$: Observable<Client[]>;
   timers: Timer[] = [];
   private timerSubscription: Subscription | null = null;
-  private clientsSubscription: Subscription | null = null;
 
-  constructor(private clientService: ClientService, private timerService: TimerService) {}
+  constructor(private clientService: ClientService, private timerService: TimerService) {
+    this.clients$ = this.clientService.getClients();
+  }
 
   ngOnInit() {
     this.loadData();
@@ -79,17 +81,9 @@ export class TimerComponent implements OnInit, OnDestroy {
 
   async loadData() {
     try {
-      this.clientsSubscription = this.clientService.getClients().subscribe({
-        next: (clients) => {
-          this.clients = clients;
-        },
-        error: (error) => {
-          console.error('Error loading clients:', error);
-        }
-      });
       this.timers = await this.timerService.getTimersToday();
     } catch (error) {
-      console.error('Error loading clients:', error);
+      console.error('Error loading timers:', error);
     }
   }
 
