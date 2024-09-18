@@ -109,7 +109,7 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
   private routeSubscription!: Subscription;
   private timerIdCounter = 0;
   private clientTimersSubscription!: Subscription;
-  
+
   constructor(
     private fb: FormBuilder,
     private clientTimersService: ClientTimersService,
@@ -150,7 +150,6 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
       this.routeSubscription.unsubscribe();
     }
   }
-
 
   loadClientTimers() {
     this.clientTimersSubscription = this.clientTimersService.clientTimers$.subscribe(timers => {

@@ -1,10 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, registerLocaleData } from '@angular/common';
 import { InvoicesService } from '../../../services/invoices.service';
 import { ClientService } from '../../../services/client.service';
 import { UserService } from '../../../services/user.service';
 import { Invoice, Client, UserInfo } from '../../../interfaces';
+import { signal } from '@angular/core';
+import localeEs from '@angular/common/locales/es';
+registerLocaleData(localeEs, 'es');
 
 @Component({
   selector: 'app-invoice',
@@ -14,10 +17,10 @@ import { Invoice, Client, UserInfo } from '../../../interfaces';
 <div class="max-w-4xl mx-auto my-8 bg-white shadow-sm rounded-sm border border-gray-200 p-8">
   <div class="text-center mb-6">
     <h1 class="text-3xl font-bold mb-2">FACTURA</h1>
-    <p class="text-lg">Número de factura: {{invoice?.invoiceNumber}}</p>
-    <p class="text-sm">Fecha de emisión: {{invoice?.issueDate}}</p>
-    @if (invoice?.dueDate) {
-    <p class="text-sm">Fecha de devengo: {{invoice?.dueDate}}</p>
+    <p class="text-lg">Número de factura: {{invoiceSignal()?.invoiceNumber}}</p>
+    <p class="text-sm">Fecha de emisión: {{invoiceSignal()?.issueDate}}</p>
+    @if (invoiceSignal()?.dueDate) {
+    <p class="text-sm">Fecha de devengo: {{invoiceSignal()?.dueDate}}</p>
     }
   </div>
   
@@ -25,21 +28,21 @@ import { Invoice, Client, UserInfo } from '../../../interfaces';
     <div class="w-1/2">
       <div class="mb-4">
         <p class="font-bold mb-2">Para</p>
-        <p>{{client?.name}}</p>
-        @if (client?.CIF) {
-        <p>{{client?.CIF}}</p>
+        <p>{{clientSignal()?.name}}</p>
+        @if (clientSignal()?.CIF) {
+        <p>{{clientSignal()?.CIF}}</p>
         }
-        <p>{{client?.address}}</p>
+        <p>{{clientSignal()?.address}}</p>
       </div>
     </div>
     
     <div class="w-1/2 text-right">
       <p class="font-bold mb-2">De</p>
-      <p>{{user?.name}}</p>
-      <p>{{user?.nif}}</p>
-      <p>{{user?.address}}</p>
-      <p>{{user?.phone}}</p>
-      <p>{{user?.website}}</p>
+      <p>{{userSignal()?.name}}</p>
+      <p>{{userSignal()?.nif}}</p>
+      <p>{{userSignal()?.address}}</p>
+      <p>{{userSignal()?.phone}}</p>
+      <p>{{userSignal()?.website}}</p>
     </div>
   </div>
 
@@ -54,12 +57,12 @@ import { Invoice, Client, UserInfo } from '../../../interfaces';
         </tr>
       </thead>
       <tbody>
-        @for (timer of invoice?.timers; track timer.tempId) {
+        @for (timer of invoiceSignal()?.timers; track timer.tempId) {
           <tr>
             <td class="border p-2">{{ timer.commentary }}</td>
             <td class="border p-2 text-right">{{ timer.elapsedTime }}</td>
-            <td class="border p-2 text-right">{{ timer.pricePerHour | currency:invoice?.currency:'symbol':'' : 'es' }}</td>
-            <td class="border p-2 text-right">{{ timer.elapsedTime * timer.pricePerHour | currency:invoice?.currency:'symbol':'': 'es' }}</td>
+            <td class="border p-2 text-right">{{ timer.pricePerHour | currency:invoiceSignal()?.currency:'symbol':'' : 'es' }}</td>
+            <td class="border p-2 text-right">{{ timer.elapsedTime * timer.pricePerHour | currency:invoiceSignal()?.currency:'symbol':'': 'es' }}</td>
           </tr>
         }
       </tbody>
@@ -68,32 +71,47 @@ import { Invoice, Client, UserInfo } from '../../../interfaces';
 
   <div class="flex justify-end">
     <div class="w-1/3">
-      <p class="flex justify-between mb-2"><span>Subtotal:</span> <span>{{invoice?.subtotal | currency:invoice?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
-      <p class="flex justify-between mb-2"><span>IVA:</span> <span>{{invoice?.iva | currency:invoice?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
-      @if (invoice?.irpf! > 0) {
-      <p class="flex justify-between mb-2"><span>IRPF:</span> <span>-{{invoice?.irpf | currency:invoice?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
+      <p class="flex justify-between mb-2"><span>Subtotal:</span> <span>{{invoiceSignal()?.subtotal | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
+      <p class="flex justify-between mb-2"><span>IVA:</span> <span>{{invoiceSignal()?.iva | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
+      @if (invoiceSignal()?.irpf! > 0) {
+      <p class="flex justify-between mb-2"><span>IRPF:</span> <span>-{{invoiceSignal()?.irpf | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
       }
-      <p class="flex justify-between font-bold text-lg"><span>Total:</span> <span>{{invoice?.total | currency:invoice?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
+      <p class="flex justify-between font-bold text-lg"><span>Total:</span> <span>{{invoiceSignal()?.total | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
     </div>
   </div>
 </div>
   `,
   styles: ``
 })
-export class InvoiceComponent {
-  invoice: Invoice | null = null;
-  client: Client | null = null;
-  user: UserInfo | null = null;
+export class InvoiceComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute, private invoicesService: InvoicesService, private clientService: ClientService, private userService: UserService) {
-      this.invoicesService.getCurrentInvoice().subscribe(invoice => {
-        this.invoice = invoice;
-      });
-      this.clientService.getClient(this.invoice?.clientId!).subscribe(client => {
-        this.client = client;
-      });
-      this.userService.getUser().subscribe(user => {
-        this.user = user;
-      });
+  invoiceSignal = signal<Invoice | null>(null);
+
+  clientSignal = signal<Client | null>(null);
+
+  userSignal = signal<UserInfo | null>(null);
+
+  constructor(private route: ActivatedRoute, private invoicesService: InvoicesService, private clientService: ClientService, private userService: UserService) {}
+
+  ngOnInit(): void {
+    this.initializeInvoiceData();
+    this.initializeUserData();
+  }
+
+  private initializeInvoiceData(): void {
+    this.invoicesService.currentInvoice$.subscribe(invoice => {
+      this.invoiceSignal.set(invoice);
+      if (invoice && invoice.clientId) {
+        this.clientService.getClientById(invoice.clientId).subscribe(client => {
+          this.clientSignal.set(client);
+        });
+      }
+    });
+  }
+
+  private initializeUserData(): void {
+    this.userService.getUser().subscribe(user => {
+      this.userSignal.set(user);
+    });
   }
 }
