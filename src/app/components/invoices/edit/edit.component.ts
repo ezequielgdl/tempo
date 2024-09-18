@@ -1,9 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-
 import { Client, Timer, Invoice } from '../../../interfaces';
 import { ClientService } from '../../../services/client.service';
 import { ClientTimersService } from '../../../services/client-timers.service';
@@ -63,7 +62,7 @@ import { InvoicesService } from '../../../services/invoices.service';
 
       <h3 class="text-xl font-bold mt-8 mb-4 text-dark-gray">Client Timers</h3>
       
-      @for (timer of clientTimers; track timer.tempId) {
+      @for (timer of clientTimers(); track timer.tempId) {
         <div class="flex flex-wrap items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-4 bg-off-white p-4 rounded-lg">
           <label class="w-full sm:w-auto">
             <input type="text" [(ngModel)]="timer.commentary" placeholder="Observaciones" class="w-full sm:w-auto px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
@@ -100,7 +99,7 @@ import { InvoicesService } from '../../../services/invoices.service';
 })
 export class EditInvoiceComponent implements OnInit, OnDestroy {
   invoiceForm: FormGroup;
-  clientTimers: Timer[] = [];
+  clientTimers = signal<Timer[]>([]);
   client: Client | null = null;
   invoice: Invoice | null = null;
   totalInvoice: number = 0;
@@ -109,7 +108,8 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
   irpfAmount: number = 0;
   private routeSubscription!: Subscription;
   private timerIdCounter = 0;
-
+  private clientTimersSubscription!: Subscription;
+  
   constructor(
     private fb: FormBuilder,
     private clientTimersService: ClientTimersService,
@@ -137,7 +137,7 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.routeSubscription = this.route.params.subscribe(params => {
       const clientId = params['id'];
-      this.clientService.getClient(clientId).subscribe(client => {
+      this.clientService.getClientById(clientId).subscribe(client => {
         this.client = client;
         this.invoiceForm.get('client')?.setValue(client?.name || '');
         this.loadClientTimers();
@@ -151,6 +151,19 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
     }
   }
 
+
+  loadClientTimers() {
+    this.clientTimersSubscription = this.clientTimersService.clientTimers$.subscribe(timers => {
+      this.clientTimers.set(timers.map(timer => ({
+        ...timer,
+        elapsedTime: this.formatHours(timer.elapsedTime),
+        pricePerHour: this.client?.pricePerHour || 0,
+        tempId: this.timerIdCounter++
+      })));
+    });
+    this.updateTotals();
+  }
+
   updateTotals() {
     this.calculateSubtotal();
     this.calculateIvaAndIrpf();
@@ -158,7 +171,7 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
   }
 
   calculateSubtotal() {
-    this.subtotal = this.clientTimers.reduce((acc, timer) => 
+    this.subtotal = this.clientTimers().reduce((acc, timer) => 
       acc + (timer.elapsedTime * timer.pricePerHour), 0);
   }
 
@@ -176,7 +189,7 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
   saveInvoice() {
     this.invoice = {
       ...this.invoiceForm.value,
-      timers: this.clientTimers,
+      timers: this.clientTimers(),
       clientId: this.client?.id,
       id: crypto.randomUUID(),
       subtotal: this.subtotal,
@@ -192,32 +205,25 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
     this.router.navigate(['/invoices', this.client?.id, '/new']);
   } 
 
-  loadClientTimers() {
-    this.clientTimers = this.clientTimersService.getClientTimers().map(timer => ({
-      ...timer,
-      elapsedTime: this.formatHours(timer.elapsedTime),
-      pricePerHour: this.client?.pricePerHour || 0,
-      tempId: this.timerIdCounter++
-    }));
-    this.updateTotals();
-  }
-
   addEmptyTimer() {
-    this.clientTimers.push({
-      commentary: '',
-      elapsedTime: this.formatHours(60),
-      pricePerHour: this.client?.pricePerHour || 0,
-      invoiceId: this.invoiceForm.get('invoiceNumber')?.value,
-      clientId: this.invoiceForm.get('client')?.value,
-      formattedTime: '00:00',
-      isRunning: false,
-      tempId: this.timerIdCounter++
-    });
+    this.clientTimers.update(timers => [
+      ...timers,
+      {
+        commentary: '',
+        elapsedTime: this.formatHours(60),
+        pricePerHour: this.client?.pricePerHour || 0,
+        invoiceId: this.invoiceForm.get('invoiceNumber')?.value,
+        clientId: this.invoiceForm.get('client')?.value,
+        formattedTime: '00:00',
+        isRunning: false,
+        tempId: this.timerIdCounter++
+      }
+    ]);
     this.updateTotals();
   }
 
   removeTimer(timerToRemove: Timer) {
-    this.clientTimers = this.clientTimers.filter(timer => timer !== timerToRemove);
+    this.clientTimers.update(timers => timers.filter(timer => timer !== timerToRemove));
     this.updateTotals();
   }
 

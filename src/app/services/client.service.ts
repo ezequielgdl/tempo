@@ -27,6 +27,13 @@ export class ClientService {
     return this.clients$;
   }
 
+  getClientById(id: string): Observable<Client | null> {
+    return this.clients$.pipe(
+      map(clients => clients.find(client => client.id === id) ?? null),
+      catchError(() => of(null))
+    );
+  }
+
   getClient(id: string): Observable<Client | null> {
     return from(this.supabaseService.getClient().from('clients').select('*').eq('id', id).single()).pipe(
       map(({ data, error }) => {
