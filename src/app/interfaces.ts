@@ -18,7 +18,7 @@ export interface Timer {
     clientName?: string;
     commentary: string;
     elapsedTime: number;
-    formattedTime: string;
+    formattedTime?: string;
     isRunning: boolean;
     pricePerHour: number;
     total?: number;

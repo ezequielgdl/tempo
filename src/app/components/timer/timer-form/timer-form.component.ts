@@ -60,11 +60,24 @@ import { Client } from '../../../interfaces';
 export class TimerFormComponent {
   @Input() clients: Client[] = [];
   @Output() close = new EventEmitter<void>();
-  @Output() save = new EventEmitter<{client: Client, commentary: string, time: string}>();
+  @Output() save = new EventEmitter<{clientId: string, clientName: string, commentary: string, pricePerHour: number, elapsedTime: number, formattedTime: string, isRunning: boolean}>();
 
   selectedClient: Client | null = null;
   commentary = '';
   time = '00:00';
+
+  convertTimeToMinutes(time: string): number {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+  }
+
+  formatTime(input: string): string {
+    const [hours, minutes] = input.split(':').map(Number);
+    const totalMinutes = hours * 60 + minutes;
+    const formattedHours = Math.floor(totalMinutes / 60).toString().padStart(2, '0');
+    const formattedMinutes = (totalMinutes % 60).toString().padStart(2, '0');
+    return `${formattedHours}:${formattedMinutes}`;
+  }
 
   closeModal() {
     this.close.emit();
@@ -73,19 +86,18 @@ export class TimerFormComponent {
   saveEntry() {
     if (this.selectedClient) {
       const formattedTime = this.formatTime(this.time);
+      const elapsedTime = this.convertTimeToMinutes(formattedTime);
       this.save.emit({
-        client: this.selectedClient,
+        clientName: this.selectedClient.name,
+        clientId: this.selectedClient.id,
         commentary: this.commentary,
-        time: formattedTime,
+        formattedTime: formattedTime,
+        elapsedTime: elapsedTime,
+        pricePerHour: this.selectedClient.pricePerHour,
+        isRunning: true
       });
+      this.closeModal();
     }
   }
 
-  private formatTime(time: string): string {
-    const [hours, minutes] = time.split(':').map(Number);
-    const totalMinutes = hours * 60 + minutes;
-    const formattedHours = Math.floor(totalMinutes / 60);
-    const formattedMinutes = totalMinutes % 60;
-    return `${formattedHours.toString().padStart(2, '0')}:${formattedMinutes.toString().padStart(2, '0')}`;
-  }
 }
