@@ -21,6 +21,7 @@ import { AsyncPipe } from '@angular/common';
         </div>
       } 
     </div>
+    
   `,
   styles: ``
 })

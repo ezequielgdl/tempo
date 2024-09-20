@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CurrencyPipe, registerLocaleData } from '@angular/common';
 import { InvoicesService } from '../../../services/invoices.service';
@@ -6,6 +6,9 @@ import { ClientService } from '../../../services/client.service';
 import { UserService } from '../../../services/user.service';
 import { Invoice, Client, UserInfo } from '../../../interfaces';
 import { signal } from '@angular/core';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
 import localeEs from '@angular/common/locales/es';
 registerLocaleData(localeEs, 'es');
 
@@ -14,7 +17,8 @@ registerLocaleData(localeEs, 'es');
   standalone: true,
   imports: [CurrencyPipe],
   template: `
-<div class="max-w-4xl mx-auto my-8 bg-white shadow-sm rounded-sm border border-gray-200 p-8">
+<button class="button-base button-secondary" (click)="generatePDF()">Generar PDF</button>
+<div #invoiceContent class="max-w-4xl mx-auto my-8 bg-white shadow-sm rounded-sm border border-gray-200 p-8">
   <div class="text-center mb-6">
     <h1 class="text-3xl font-bold mb-2">FACTURA</h1>
     <p class="text-lg">Número de factura: {{invoiceSignal()?.invoiceNumber}}</p>
@@ -91,6 +95,8 @@ export class InvoiceComponent implements OnInit {
 
   userSignal = signal<UserInfo | null>(null);
 
+  @ViewChild('invoiceContent') invoiceContent!: ElementRef;
+
   constructor(private route: ActivatedRoute, private invoicesService: InvoicesService, private clientService: ClientService, private userService: UserService) {}
 
   ngOnInit(): void {
@@ -112,6 +118,28 @@ export class InvoiceComponent implements OnInit {
   private initializeUserData(): void {
     this.userService.getUser().subscribe(user => {
       this.userSignal.set(user);
+    });
+  }
+
+  generatePDF(): void {
+    const element = this.invoiceContent.nativeElement;
+    
+    html2canvas(element).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+      
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      
+      // Open PDF in a new tab
+      window.open(URL.createObjectURL(pdf.output('blob')), '_blank');
     });
   }
 }
