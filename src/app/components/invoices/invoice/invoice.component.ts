@@ -17,8 +17,8 @@ registerLocaleData(localeEs, 'es');
   standalone: true,
   imports: [CurrencyPipe],
   template: `
-<button class="button-base button-secondary" (click)="generatePDF()">Generar PDF</button>
-<div #invoiceContent class="max-w-4xl mx-auto my-8 bg-white shadow-sm rounded-sm border border-gray-200 p-8">
+<button class="button-base button-secondary mt-4 mb-4 mx-4" (click)="generatePDF()">Generar PDF</button>
+<div #invoiceContent class="max-w-4xl mx-auto my-8 bg-white shadow-sm rounded-sm border border-gray-200 p-8 m-4">
   <div class="text-center mb-6">
     <h1 class="text-3xl font-bold mb-2">FACTURA</h1>
     <p class="text-lg">Número de factura: {{invoiceSignal()?.invoiceNumber}}</p>

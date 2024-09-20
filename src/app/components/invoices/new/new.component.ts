@@ -38,6 +38,12 @@ import { TimerService } from '../../../services/timer.service';
           <option value="custom">Custom</option>
         </select>
       </div>
+      <div>
+          <label class="flex items-center text-dark-gray">
+            <input type="radio" formControlName="invoiceType" value="free" class="mr-2">
+            Factura sin horas
+          </label>
+        </div>
       @if (invoiceForm.get('timePeriod')?.value === 'custom') {
         <div class="mb-4">
           <label for="startDate" class="block text-dark-gray font-bold mb-2">Desde:</label>
