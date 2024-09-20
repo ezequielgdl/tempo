@@ -11,7 +11,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 import localeEs from '@angular/common/locales/es';
-registerLocaleData(localeEs, 'es');
+registerLocaleData(localeEs);
 
 @Component({
   selector: 'app-invoice',
@@ -143,25 +143,34 @@ export class InvoiceComponent implements OnInit {
     });
   }
 
-  generatePDF(): void {
-    const element = this.invoiceContent.nativeElement;
+generatePDF(): void {
+  const element = this.invoiceContent.nativeElement;
+  const pdf = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4'
+  });
+
+  html2canvas(element).then((canvas) => {
+    const imgData = canvas.toDataURL('image/png');
+    const imgWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
     
-    html2canvas(element).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
-      
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      
-      // Open PDF in a new tab
-      window.open(URL.createObjectURL(pdf.output('blob')), '_blank');
-    });
-  }
+    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+
+    // If the content is longer than one page, add more pages
+    if (imgHeight > pageHeight) {
+      const pageCount = Math.ceil(imgHeight / pageHeight);
+      for (let i = 1; i < pageCount; i++) {
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, -(pageHeight * i), imgWidth, imgHeight);
+      }
+    }
+
+    // Open PDF in a new tab
+    window.open(URL.createObjectURL(pdf.output('blob')), '_blank');
+  });
+}
+
 }
