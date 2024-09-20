@@ -14,7 +14,7 @@ import { InvoicesService } from '../../../services/invoices.service';
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   template: `
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 my-10">
-      <h2 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-dark-gray">Factura para {{ client?.name }}</h2>
+      <h2 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-dark-gray">Factura</h2>
       <form [formGroup]="invoiceForm" (ngSubmit)="saveInvoice()" id="invoiceForm" class="space-y-4 sm:space-y-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -34,12 +34,12 @@ import { InvoicesService } from '../../../services/invoices.service';
             <input id="client" type="text" formControlName="client" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
           </div>
           <div>
-            <label for="iva" class="block text-dark-gray font-bold mb-2">IVA (%):</label>
-            <input id="iva" type="number" formControlName="iva" (ngModelChange)="updateTotals()" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+            <label for="ivaRate" class="block text-dark-gray font-bold mb-2">IVA (%):</label>
+            <input id="ivaRate" type="number" formControlName="ivaRate" (ngModelChange)="updateTotals()" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
           </div>
           <div>
-            <label for="irpf" class="block text-dark-gray font-bold mb-2">IRPF (%):</label>
-            <input id="irpf" type="number" formControlName="irpf" (ngModelChange)="updateTotals()" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+            <label for="irpfRate" class="block text-dark-gray font-bold mb-2">IRPF (%):</label>
+            <input id="irpfRate" type="number" formControlName="irpfRate" (ngModelChange)="updateTotals()" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
           </div>
         </div>
         <div>
@@ -84,12 +84,12 @@ import { InvoicesService } from '../../../services/invoices.service';
       <button class="button-base button-primary mb-6" (click)="addEmptyTimer()">Agregar Item</button>
       <div class="space-y-2 text-lg">
         <div>Subtotal: {{ subtotal | currency:invoiceForm.get('currency')?.value }}</div>
-        <div>IVA ({{ invoiceForm.get('iva')?.value }}%): {{ ivaAmount | currency:invoiceForm.get('currency')?.value }}</div>
-        <div>IRPF ({{ invoiceForm.get('irpf')?.value }}%): -{{ irpfAmount | currency:invoiceForm.get('currency')?.value }}</div>
+        <div>IVA ({{ invoiceForm.get('ivaRate')?.value }}%): {{ ivaAmount | currency:invoiceForm.get('currency')?.value }}</div>
+        <div>IRPF ({{ invoiceForm.get('irpfRate')?.value }}%): -{{ irpfAmount | currency:invoiceForm.get('currency')?.value }}</div>
         <div class="font-bold">Total Invoice: {{ totalInvoice | currency:invoiceForm.get('currency')?.value }}</div>
       </div>
       <div class="mt-6 space-x-4">
-        <button class="button-base button-primary" type="submit" form="invoiceForm">Guardar</button>
+        <button class="button-base button-primary" type="submit" form="invoiceForm">Ver Factura</button>
         <button class="button-base button-secondary" (click)="cancelInvoice()">Cancelar</button>
       </div>
     </div>
@@ -100,7 +100,7 @@ import { InvoicesService } from '../../../services/invoices.service';
 export class EditInvoiceComponent implements OnInit, OnDestroy {
   invoiceForm: FormGroup;
   clientTimers = signal<Timer[]>([]);
-  client: Client | null = null;
+  client = signal<Client | null>(null);
   invoice: Invoice | null = null;
   totalInvoice: number = 0;
   subtotal: number = 0;
@@ -122,25 +122,44 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
       invoiceNumber: ['', Validators.required],
       issueDate: [this.formatDate(new Date()), Validators.required],
       dueDate: ['', Validators.required],
-      client: [this.client?.name || '', Validators.required],
-      iva: [21, [Validators.required, Validators.min(0), Validators.max(100)]],
-      irpf: [15, [Validators.required, Validators.min(0), Validators.max(100)]],
+      client: [this.client()?.name || '', Validators.required],
+      ivaRate: [21, [Validators.required, Validators.min(0), Validators.max(100)]],
+      irpfRate: [15, [Validators.required, Validators.min(0), Validators.max(100)]],
       currency: ['EUR', Validators.required],
       subject: [''],
       notes: ['']
     });
 
-    this.invoiceForm.get('iva')?.valueChanges.subscribe(() => this.updateTotals());
-    this.invoiceForm.get('irpf')?.valueChanges.subscribe(() => this.updateTotals());
+    this.invoiceForm.get('ivaRate')?.valueChanges.subscribe(() => this.updateTotals());
+    this.invoiceForm.get('irpfRate')?.valueChanges.subscribe(() => this.updateTotals());
   }
 
   ngOnInit() {
     this.routeSubscription = this.route.params.subscribe(params => {
-      const clientId = params['id'];
+      const clientId = params['clientId'];
+      const invoiceId = params['invoiceId'];
+
       this.clientService.getClientById(clientId).subscribe(client => {
-        this.client = client;
+        this.client.set(client);
         this.invoiceForm.get('client')?.setValue(client?.name || '');
-        this.loadClientTimers();
+        
+        if (invoiceId) {
+          // Editing existing invoice
+          this.invoicesService.getCurrentInvoice().subscribe(existingInvoice => {
+            if (existingInvoice) {
+              this.invoice = existingInvoice;
+              this.clientService.getClientById(existingInvoice.clientId).subscribe(client => {
+                this.client.set(client);
+              });
+              this.populateFormWithInvoice(existingInvoice);
+            } else {
+              console.error('Invoice not found');
+            }
+          });
+        } else {
+          // Creating new invoice
+          this.loadClientTimers();
+        }
       });
     });
   }
@@ -156,10 +175,27 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
       this.clientTimers.set(timers.map(timer => ({
         ...timer,
         elapsedTime: this.formatHours(timer.elapsedTime),
-        pricePerHour: this.client?.pricePerHour || 0,
+        pricePerHour: this.client()?.pricePerHour || 0,
         tempId: this.timerIdCounter++
       })));
     });
+    this.updateTotals();
+  }
+
+  private populateFormWithInvoice(invoice: Invoice) {
+    this.invoiceForm.patchValue({
+      invoiceNumber: invoice.invoiceNumber,
+      issueDate: invoice.issueDate,
+      dueDate: invoice.dueDate,
+      client: invoice.clientName,
+      clientId: invoice.clientId,
+      ivaRate: invoice.ivaRate,
+      irpfRate: invoice.irpfRate,
+      currency: invoice.currency,
+      subject: invoice.subject,
+      notes: invoice.notes
+    });
+    this.clientTimers.set(invoice.timers);
     this.updateTotals();
   }
 
@@ -175,10 +211,8 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
   }
 
   calculateIvaAndIrpf() {
-    const ivaRate = this.invoiceForm.get('iva')?.value / 100;
-    const irpfRate = this.invoiceForm.get('irpf')?.value / 100;
-    this.ivaAmount = this.subtotal * ivaRate;
-    this.irpfAmount = this.subtotal * irpfRate;
+    this.ivaAmount = this.subtotal * this.invoiceForm.get('ivaRate')?.value / 100;
+    this.irpfAmount = this.subtotal * this.invoiceForm.get('irpfRate')?.value / 100;
   }
 
   calculateTotalInvoice() {
@@ -186,23 +220,38 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
   }
 
   saveInvoice() {
-    this.invoice = {
+    const invoiceData = {
       ...this.invoiceForm.value,
       timers: this.clientTimers(),
-      clientId: this.client?.id,
-      id: crypto.randomUUID(),
+      clientId: this.client()?.id,
+      clientName: this.client()?.name,
       subtotal: this.subtotal,
-      iva: this.ivaAmount,
-      irpf: this.irpfAmount,
+      ivaRate: this.invoiceForm.get('ivaRate')?.value,
+      irpfRate: this.invoiceForm.get('irpfRate')?.value,
+      ivaAmount: this.ivaAmount,
+      irpfAmount: this.irpfAmount,
       total: this.totalInvoice
     };
+
+    if (this.invoice) {
+      // Updating existing invoice
+      this.invoice = { ...this.invoice, ...invoiceData };
+    } else {
+      // Creating new invoice
+      this.invoice = { ...invoiceData, id: crypto.randomUUID() };
+    }
+
     this.invoicesService.setCurrentInvoice(this.invoice!);
-    this.router.navigate(['/invoices', this.invoice?.id]);
+    this.router.navigate(['/invoices', this.invoice!.id]);
   }
 
   cancelInvoice() {
-    this.router.navigate(['/invoices', this.client?.id, '/new']);
-  } 
+    if (this.invoice) {
+      this.router.navigate(['/invoices', this.invoice.id]);
+    } else {
+      this.router.navigate(['/clients', this.client()?.id]);
+    }
+  }
 
   addEmptyTimer() {
     this.clientTimers.update(timers => [
@@ -210,7 +259,7 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
       {
         commentary: '',
         elapsedTime: this.formatHours(60),
-        pricePerHour: this.client?.pricePerHour || 0,
+        pricePerHour: this.client()?.pricePerHour || 0,
         invoiceId: this.invoiceForm.get('invoiceNumber')?.value,
         clientId: this.invoiceForm.get('client')?.value,
         formattedTime: '00:00',

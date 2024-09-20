@@ -22,8 +22,8 @@ export const routes: Routes = [
   { path: 'signup', component: SignupComponent, canActivate: [AuthGuard] },
   { path: 'clients/:id/edit', component: EditComponent, canActivate: [AuthGuard] },
   { path: 'invoices', component: InvoicesComponent, canActivate: [AuthGuard] },
-  { path: 'invoices/:id/new', component: NewInvoiceComponent, canActivate: [AuthGuard] },
-  { path: 'invoices/:id/edit', component: EditInvoiceComponent, canActivate: [AuthGuard] },
-  { path: 'invoices/:id', component: InvoiceComponent, canActivate: [AuthGuard] },
+  { path: 'invoices/new/:clientId', component: EditInvoiceComponent, canActivate: [AuthGuard] },
+  { path: 'invoices/:invoiceId/edit', component: EditInvoiceComponent, canActivate: [AuthGuard] },
+  { path: 'invoices/:invoiceId', component: InvoiceComponent, canActivate: [AuthGuard] },
   { path: 'user', component: UserComponent, canActivate: [AuthGuard] },
 ];

@@ -22,4 +22,5 @@ export class InvoicesService {
   clearCurrentInvoice(): void {
     this.currentInvoiceSubject.next(null);
   }
+
 }

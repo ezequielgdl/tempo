@@ -24,7 +24,7 @@ import { ClientService } from '../../services/client.service';
               <option [value]="client.id">{{ client.name }}</option>
             }
           </select>
-          <button class="button-base button-primary w-full mt-2" routerLink="/invoices/{{ selectedClientId }}/new" [disabled]="!selectedClientId">Crear</button>
+          <button class="button-base button-primary w-full mt-2" routerLink="/invoices/new/{{ selectedClientId }}" [disabled]="!selectedClientId">Crear</button>
         </div>}
       </div>
     </div>

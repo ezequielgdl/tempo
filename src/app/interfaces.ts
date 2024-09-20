@@ -28,6 +28,7 @@ export interface Timer {
 export interface Invoice {
     id: string;
     clientId: string;
+    clientName: string;
     invoiceNumber: number | string;
     date: string;
     subtotal: number;
@@ -36,8 +37,10 @@ export interface Invoice {
     timers: Timer[];
     issueDate: string;
     dueDate: string;
-    iva: number;
-    irpf: number;
+    ivaRate: number;
+    irpfRate: number;
+    ivaAmount: number;
+    irpfAmount: number;
     currency: string;
     subject: string;
     notes: string;

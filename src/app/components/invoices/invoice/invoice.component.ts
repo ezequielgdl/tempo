@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { CurrencyPipe, registerLocaleData } from '@angular/common';
 import { InvoicesService } from '../../../services/invoices.service';
@@ -17,7 +18,9 @@ registerLocaleData(localeEs, 'es');
   standalone: true,
   imports: [CurrencyPipe],
   template: `
-<button class="button-base button-secondary mt-4 mb-4 mx-4" (click)="generatePDF()">Generar PDF</button>
+<button class="button-base button-primary mt-4 mb-4 mx-4" (click)="generatePDF()">Generar PDF</button>
+<button class="button-base button-primary mt-4 mb-4 mx-4" (click)="editInvoice()">Editar</button>
+<button class="button-base button-primary mt-4 mb-4 mx-4">Guardar</button>
 <div #invoiceContent class="max-w-4xl mx-auto my-8 bg-white shadow-sm rounded-sm border border-gray-200 p-8 m-4">
   <div class="text-center mb-6">
     <h1 class="text-3xl font-bold mb-2">FACTURA</h1>
@@ -76,9 +79,9 @@ registerLocaleData(localeEs, 'es');
   <div class="flex justify-end">
     <div class="w-1/3">
       <p class="flex justify-between mb-2"><span>Subtotal:</span> <span>{{invoiceSignal()?.subtotal | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
-      <p class="flex justify-between mb-2"><span>IVA:</span> <span>{{invoiceSignal()?.iva | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
-      @if (invoiceSignal()?.irpf! > 0) {
-      <p class="flex justify-between mb-2"><span>IRPF:</span> <span>-{{invoiceSignal()?.irpf | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
+      <p class="flex justify-between mb-2"><span>IVA {{invoiceSignal()?.ivaRate}}%:</span> <span>{{invoiceSignal()?.ivaAmount | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
+      @if (invoiceSignal()?.irpfAmount! > 0) {
+      <p class="flex justify-between mb-2"><span>IRPF {{invoiceSignal()?.irpfRate}}%:</span> <span>-{{invoiceSignal()?.irpfAmount | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
       }
       <p class="flex justify-between font-bold text-lg"><span>Total:</span> <span>{{invoiceSignal()?.total | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
     </div>
@@ -97,7 +100,11 @@ export class InvoiceComponent implements OnInit {
 
   @ViewChild('invoiceContent') invoiceContent!: ElementRef;
 
-  constructor(private route: ActivatedRoute, private invoicesService: InvoicesService, private clientService: ClientService, private userService: UserService) {}
+  constructor(private route: ActivatedRoute,
+    private invoicesService: InvoicesService,
+    private clientService: ClientService,
+    private userService: UserService,
+    private router: Router) {}
 
   ngOnInit(): void {
     this.initializeInvoiceData();
@@ -105,14 +112,29 @@ export class InvoiceComponent implements OnInit {
   }
 
   private initializeInvoiceData(): void {
-    this.invoicesService.currentInvoice$.subscribe(invoice => {
-      this.invoiceSignal.set(invoice);
-      if (invoice && invoice.clientId) {
-        this.clientService.getClientById(invoice.clientId).subscribe(client => {
-          this.clientSignal.set(client);
-        });
+    const invoiceId = this.route.snapshot.params['invoiceId'];
+    this.invoicesService.getCurrentInvoice().subscribe(invoice => {
+      if (invoice) {
+        this.invoiceSignal.set(invoice);
+        if (invoice.clientId) {
+          this.clientService.getClientById(invoice.clientId).subscribe(client => {
+            this.clientSignal.set(client);
+          });
+        }
+      } else {
+        console.error('Invoice not found');
+        // Handle error (e.g., redirect to 404 page)
       }
     });
+  }
+
+  editInvoice(): void {
+    const invoiceId = this.route.snapshot.params['invoiceId'];
+    if (invoiceId) {
+      this.router.navigate(['/invoices', invoiceId, 'edit']);
+    } else {
+      console.error('No invoice ID available');
+    }
   }
 
   private initializeUserData(): void {
