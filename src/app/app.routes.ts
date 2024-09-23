@@ -8,7 +8,6 @@ import { HomeComponent } from './components/home/home.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { EditComponent } from './components/clients/edit/edit.component';
 import { InvoicesComponent } from './components/invoices/invoices.component'; 
-import { NewInvoiceComponent } from './components/invoices/new/new.component';
 import { EditInvoiceComponent } from './components/invoices/edit/edit.component';
 import { InvoiceComponent } from './components/invoices/invoice/invoice.component';
 import { UserComponent } from './components/user/user.component';
