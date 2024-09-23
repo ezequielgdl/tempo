@@ -105,8 +105,6 @@ export class NewInvoiceComponent implements OnInit {
       const { startDate, endDate } = this.getDateRange(timePeriod);
       this.getAllUninvoicedTimersByDate(startDate, endDate);
     }
-
-     this.router.navigate(['/invoices', this.clientId, 'edit']);
   }
 
   getDateRange(timePeriod: string): { startDate: Date, endDate: Date } {

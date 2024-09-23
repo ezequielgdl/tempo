@@ -74,7 +74,7 @@ export class TimerService {
     const { data, error } = await this.supabase
       .from('timers')
       .select('*')
-      .eq('client_id', clientId)
+      .eq('clientId', clientId)
       .eq('user_id', user.id)
       .is('invoiceId', null)
       .gte('created_at', startDate.toISOString())

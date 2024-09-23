@@ -64,7 +64,7 @@ registerLocaleData(localeEs);
         </tr>
       </thead>
       <tbody>
-        @for (timer of invoiceSignal()?.timers; track timer.tempId) {
+        @for (timer of invoiceSignal()?.timers; track $index) {
           <tr>
             <td class="border p-2">{{ timer.commentary }}</td>
             <td class="border p-2 text-right">{{ timer.elapsedTime }}</td>
