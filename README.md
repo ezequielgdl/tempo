@@ -1,4 +1,13 @@
-# Frontend
+# Tempo
+
+Tempo es una aplicación para la gestión de tiempos de trabajo para autonómos. Permite al usuario gestionar sus tiempos de trabajo, facturas y clientes.
+
+## Tecnologías usadas
+
+- Angular
+- Tailwind
+- Supabase
+- RxJS
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.5.
 
