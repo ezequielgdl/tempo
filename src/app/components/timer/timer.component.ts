@@ -10,20 +10,29 @@ import { interval, Subscription } from 'rxjs';
   standalone: true,
   imports: [TimerFormComponent],
   template: `
-    <h1 class="text-2xl font-bold mb-4">Timers</h1>
-    <button (click)="isOpen.set(true)" class="button-base button-primary mb-4">Nuevo Timer</button>
-    @if (isOpen()) {
-      <app-timer-form (close)="isOpen.set(false)" (save)="saveTimer($event)" [clients]="clients"></app-timer-form>
-    }
-    <div>
-      <ul>
-        @for (timer of timers(); track timer.id) {
-          <li>
-            {{ timer.clientName }} - {{ timer.formattedTime }}
-            <button (click)="toggleTimer(timer)">{{ timer.isRunning ? 'Stop' : 'Resume' }}</button>
-          </li>
-        }
-      </ul>
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 my-10">
+      <h2 class="text-2xl sm:text-3xl mb-4 sm:mb-6">Timers</h2>
+
+      <button (click)="isOpen.set(true)" class="button-base button-secondary w-full sm:w-auto mb-4 sm:mb-6">Nuevo Timer</button>
+
+      @if (isOpen()) {
+        <app-timer-form (close)="isOpen.set(false)" (save)="saveTimer($event)" [clients]="clients"></app-timer-form>
+      }
+
+      @if (timers().length === 0) {
+        <p class="text-lg">No timers found.</p>
+      } @else {
+        <ul class="space-y-3 sm:space-y-4">
+          @for (timer of timers(); track timer.id) {
+            <li class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-lg shadow bg-primary-darker border border-off-white">
+              <span class="mb-2 sm:mb-0">{{ timer.clientName }} - {{ timer.formattedTime }}</span>
+              <button (click)="toggleTimer(timer)" class="button-base button-secondary w-full sm:w-auto">
+                {{ timer.isRunning ? 'Stop' : 'Resume' }}
+              </button>
+            </li>
+          }
+        </ul>
+      }
     </div>
   `,
   styles: ``

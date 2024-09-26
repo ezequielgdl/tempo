@@ -5,7 +5,8 @@
 
 body {
     font-family: 'PP Neue Montreal', sans-serif;
-    font-weight: 500;
+    @apply bg-primary-dark;
+    @apply text-off-white;
 }
 
 .button-base {
@@ -13,10 +14,10 @@ body {
 }
 
 .button-primary {
-    @apply bg-primary text-off-white hover:bg-primary-dark focus:ring-4 focus:ring-blue-300;
+    @apply text-off-white hover:bg-primary-darker focus:ring-4;
 }
 
 .button-secondary {
-    @apply bg-primary-dark text-white hover:bg-dark-gray focus:ring-4 focus:ring-gray-300;
+    @apply bg-primary-light text-white hover:bg-primary-lighter focus:ring-4;
 }
 

@@ -16,45 +16,45 @@ import { InvoiceHelperService } from '../../../services/invoice-helper.service';
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   template: `
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 my-10">
-      <h2 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-dark-gray">Factura</h2>
+      <h2 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-off-white">Factura</h2>
       <form [formGroup]="invoiceForm" (ngSubmit)="saveInvoice()" id="invoiceForm" class="space-y-4 sm:space-y-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label for="invoiceNumber" class="block text-dark-gray font-bold mb-2">Número de factura:</label>
-            <input id="invoiceNumber" type="text" formControlName="invoiceNumber" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+            <label for="invoiceNumber" class="block text-off-white font-bold mb-2">Número de factura:</label>
+            <input id="invoiceNumber" type="text" formControlName="invoiceNumber" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
           </div>
           <div>
-            <label for="issueDate" class="block text-dark-gray font-bold mb-2">Fecha de emisión:</label>
-            <input id="issueDate" type="date" formControlName="issueDate" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+            <label for="issueDate" class="block text-off-white font-bold mb-2">Fecha de emisión:</label>
+            <input id="issueDate" type="date" formControlName="issueDate" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
           </div>
           <div>
-            <label for="dueDate" class="block text-dark-gray font-bold mb-2">Vencimiento:</label>
-            <input id="dueDate" type="date" formControlName="dueDate" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+            <label for="dueDate" class="block text-off-white font-bold mb-2">Vencimiento:</label>
+            <input id="dueDate" type="date" formControlName="dueDate" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
           </div>
           <div>
-            <label for="client" class="block text-dark-gray font-bold mb-2">Cliente:</label>
-            <input id="client" type="text" formControlName="clientName" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+            <label for="client" class="block text-off-white font-bold mb-2">Cliente:</label>
+            <input id="client" type="text" formControlName="clientName" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
           </div>
           <div>
-            <label for="ivaRate" class="block text-dark-gray font-bold mb-2">IVA (%):</label>
-            <input id="ivaRate" type="number" formControlName="ivaRate" (ngModelChange)="updateTotals()" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+            <label for="ivaRate" class="block text-off-white font-bold mb-2">IVA (%):</label>
+            <input id="ivaRate" type="number" formControlName="ivaRate" (ngModelChange)="updateTotals()" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
           </div>
           <div>
-            <label for="irpfRate" class="block text-dark-gray font-bold mb-2">IRPF (%):</label>
-            <input id="irpfRate" type="number" formControlName="irpfRate" (ngModelChange)="updateTotals()" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+            <label for="irpfRate" class="block text-off-white font-bold mb-2">IRPF (%):</label>
+            <input id="irpfRate" type="number" formControlName="irpfRate" (ngModelChange)="updateTotals()" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
           </div>
         </div>
         <div>
-          <label for="subject" class="block text-dark-gray font-bold mb-2">Sujeto:</label>
-          <input id="subject" type="text" formControlName="subject" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+          <label for="subject" class="block text-off-white font-bold mb-2">Sujeto:</label>
+          <input id="subject" type="text" formControlName="subject" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
         </div>
         <div>
-          <label for="notes" class="block text-dark-gray font-bold mb-2">Notas:</label>
-          <textarea id="notes" formControlName="notes" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+          <label for="notes" class="block text-off-white font-bold mb-2">Notas:</label>
+          <textarea id="notes" formControlName="notes" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white"></textarea>
         </div>
         <div>
-          <label for="currency" class="block text-dark-gray font-bold mb-2">Moneda:</label>
-          <select id="currency" formControlName="currency" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+          <label for="currency" class="block text-off-white font-bold mb-2">Moneda:</label>
+          <select id="currency" formControlName="currency" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
             <option value="EUR">EUR</option>
             <option value="USD">USD</option>
             <option value="GBP">GBP</option>
@@ -62,46 +62,46 @@ import { InvoiceHelperService } from '../../../services/invoice-helper.service';
         </div>
       </form>
 
-      <h3 class="text-xl font-bold mt-8 mb-4 text-dark-gray">Client Timers</h3>
+      <h3 class="text-xl font-bold mt-8 mb-4 text-off-white">Client Timers</h3>
       
       @for (timer of clientTimers(); track $index) {
-        <div class="flex flex-wrap items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-4 bg-off-white p-4 rounded-lg">
+        <div class="flex flex-wrap items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-4 bg-primary-darker p-4 rounded-lg border border-off-white">
           <label class="w-full sm:w-auto">
-            <input type="text" [(ngModel)]="timer.commentary" placeholder="Observaciones" class="w-full sm:w-auto px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+            <input type="text" [(ngModel)]="timer.commentary" placeholder="Observaciones" class="w-full sm:w-auto px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
           </label>
-          <label class="w-full sm:w-auto">
+          <label class="w-full sm:w-auto text-off-white">
             Horas/Unidad:
-            <input type="text" [(ngModel)]="timer.elapsedTime" (ngModelChange)="updateTotals()" class="w-24 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+            <input type="text" [(ngModel)]="timer.elapsedTime" (ngModelChange)="updateTotals()" class="w-24 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
           </label>
-          <label class="w-full sm:w-auto">
+          <label class="w-full sm:w-auto text-off-white">
             Precio x hora/unidad:
-            <input type="text" [(ngModel)]="timer.pricePerHour" (ngModelChange)="updateTotals()" class="w-24 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+            <input type="text" [(ngModel)]="timer.pricePerHour" (ngModelChange)="updateTotals()" class="w-24 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
           </label>
-          <span class="w-full sm:w-auto">
+          <span class="w-full sm:w-auto text-off-white">
             {{ timer.elapsedTime * timer.pricePerHour | currency:invoiceForm.get('currency')?.value }}
           </span>
           <button class="button-base button-secondary" (click)="removeTimer(timer)">X</button>
         </div>
       }
-      <button class="button-base button-primary mb-6" (click)="addEmptyTimer()">Agregar Item</button>
+      <button class="button-base button-secondary mb-6" (click)="addEmptyTimer()">Agregar Item</button>
 
-      <form [formGroup]="invoiceTimersForm" (ngSubmit)="onSubmit()" class="max-w-md mx-auto p-4 bg-off-white rounded-lg shadow-md my-10">
+      <form [formGroup]="invoiceTimersForm" (ngSubmit)="onSubmit()" class="max-w-md mx-auto p-4 bg-primary-darker rounded-lg shadow-md border border-off-white my-10">
       <div class="mb-6">
         <div class="mb-2">
-          <label class="flex items-center text-dark-gray">
+          <label class="flex items-center text-off-white">
             <input type="radio" formControlName="invoiceType" value="all" class="mr-2">
             Todas las horas sin facturar
           </label>
         </div>
         <div>
-          <label class="flex items-center text-dark-gray">
+          <label class="flex items-center text-off-white">
             <input type="radio" formControlName="invoiceType" value="specific" class="mr-2">
             Horas sin facturar de
           </label>
         </div>
       </div>
       <div class="mb-6">
-        <select formControlName="timePeriod" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+        <select formControlName="timePeriod" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
           <option value="thisMonth">Este mes</option>
           <option value="lastMonth">El mes pasado</option>
           <option value="thisQuarter">Este cuatrimestre</option>
@@ -113,25 +113,25 @@ import { InvoiceHelperService } from '../../../services/invoice-helper.service';
       </div>
       @if (invoiceTimersForm.get('timePeriod')?.value === 'custom') {
         <div class="mb-4">
-          <label for="startDate" class="block text-dark-gray font-bold mb-2">Desde:</label>
-          <input type="date" id="startDate" formControlName="startDate" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+          <label for="startDate" class="block text-off-white font-bold mb-2">Desde:</label>
+          <input type="date" id="startDate" formControlName="startDate" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
         </div>
         <div class="mb-6">
-          <label for="endDate" class="block text-dark-gray font-bold mb-2">Hasta:</label>
-          <input type="date" id="endDate" formControlName="endDate" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+          <label for="endDate" class="block text-off-white font-bold mb-2">Hasta:</label>
+          <input type="date" id="endDate" formControlName="endDate" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
         </div>
       }
-      <button class="button-base button-primary w-full sm:w-auto" type="submit">Agregar Timers</button>
+      <button class="button-base button-secondary w-full sm:w-auto" type="submit">Agregar Timers</button>
     </form>
 
-      <div class="space-y-2 text-lg">
+      <div class="space-y-2 text-lg text-off-white">
         <div>Subtotal: {{ subtotal() | currency:invoiceForm.get('currency')?.value }}</div>
         <div>IVA ({{ invoiceForm.get('ivaRate')?.value }}%): {{ ivaAmount() | currency:invoiceForm.get('currency')?.value }}</div>
         <div>IRPF ({{ invoiceForm.get('irpfRate')?.value }}%): -{{ irpfAmount() | currency:invoiceForm.get('currency')?.value }}</div>
         <div class="font-bold">Total Invoice: {{ totalInvoice() | currency:invoiceForm.get('currency')?.value }}</div>
       </div>
       <div class="mt-6 space-x-4">
-        <button class="button-base button-primary" type="submit" form="invoiceForm">Ver Factura</button>
+        <button class="button-base button-secondary" type="submit" form="invoiceForm">Ver Factura</button>
         <button class="button-base button-secondary" (click)="cancelInvoice()">Cancelar</button>
       </div>
     </div>
@@ -308,11 +308,7 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
   }
 
   cancelInvoice() {
-    if (this.invoice) {
-      this.router.navigate(['/invoices', this.invoice.id]);
-    } else {
-      this.router.navigate(['/clients', this.client()?.id]);
-    }
+    this.router.navigate(['/invoices']);
   }
 
   addEmptyTimer() {

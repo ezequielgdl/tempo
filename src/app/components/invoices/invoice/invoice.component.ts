@@ -18,38 +18,38 @@ registerLocaleData(localeEs);
   standalone: true,
   imports: [CurrencyPipe],
   template: `
-<button class="button-base button-primary mt-4 mb-4 mx-4" (click)="generatePDF()">Generar PDF</button>
-<button class="button-base button-primary mt-4 mb-4 mx-4" (click)="editInvoice()">Editar</button>
-<button class="button-base button-primary mt-4 mb-4 mx-4" (click)="saveInvoice()">Guardar</button>
-<div #invoiceContent class="max-w-4xl mx-auto my-8 bg-white shadow-sm rounded-sm border border-gray-200 p-8 m-4">
+<button class="button-base button-secondary mt-4 mb-4 mx-4" (click)="generatePDF()">Generar PDF</button>
+<button class="button-base button-secondary mt-4 mb-4 mx-4" (click)="editInvoice()">Editar</button>
+<button class="button-base button-secondary mt-4 mb-4 mx-4" (click)="saveInvoice()">Guardar</button>
+<div #invoiceContent class="max-w-4xl mx-auto my-8 bg-white shadow-sm rounded-sm border border-gray-200 p-8 m-4 text-gray-800">
   <div class="text-center mb-6">
-    <h1 class="text-3xl font-bold mb-2">FACTURA</h1>
+    <h1 class="text-3xl font-bold mb-2 text-gray-900">FACTURA</h1>
     <p class="text-lg">Número de factura: {{invoiceSignal()?.invoiceNumber}}</p>
-    <p class="text-sm">Fecha de emisión: {{invoiceSignal()?.issueDate}}</p>
+    <p class="text-sm text-gray-600">Fecha de emisión: {{invoiceSignal()?.issueDate}}</p>
     @if (invoiceSignal()?.dueDate) {
-    <p class="text-sm">Fecha de devengo: {{invoiceSignal()?.dueDate}}</p>
+    <p class="text-sm text-gray-600">Fecha de devengo: {{invoiceSignal()?.dueDate}}</p>
     }
   </div>
   
   <div class="flex justify-between mb-8">
     <div class="w-1/2">
       <div class="mb-4">
-        <p class="font-bold mb-2">Para</p>
+        <p class="font-bold mb-2 text-gray-700">Para</p>
         <p>{{clientSignal()?.name}}</p>
         @if (clientSignal()?.CIF) {
-        <p>{{clientSignal()?.CIF}}</p>
+        <p class="text-gray-600">{{clientSignal()?.CIF}}</p>
         }
-        <p>{{clientSignal()?.address}}</p>
+        <p class="text-gray-600">{{clientSignal()?.address}}</p>
       </div>
     </div>
     
     <div class="w-1/2 text-right">
-      <p class="font-bold mb-2">De</p>
+      <p class="font-bold mb-2 text-gray-700">De</p>
       <p>{{userSignal()?.name}}</p>
-      <p>{{userSignal()?.nif}}</p>
-      <p>{{userSignal()?.address}}</p>
-      <p>{{userSignal()?.phone}}</p>
-      <p>{{userSignal()?.website}}</p>
+      <p class="text-gray-600">{{userSignal()?.nif}}</p>
+      <p class="text-gray-600">{{userSignal()?.address}}</p>
+      <p class="text-gray-600">{{userSignal()?.phone}}</p>
+      <p class="text-gray-600">{{userSignal()?.website}}</p>
     </div>
   </div>
 
@@ -57,19 +57,19 @@ registerLocaleData(localeEs);
     <table class="w-full border-collapse">
       <thead>
         <tr class="bg-gray-100">
-          <th class="border p-2 text-left">Concepto</th>
-          <th class="border p-2 text-right">Horas</th>
-          <th class="border p-2 text-right">Precio por hora</th>
-          <th class="border p-2 text-right">Importe</th>
+          <th class="border border-gray-300 p-2 text-left text-gray-700">Concepto</th>
+          <th class="border border-gray-300 p-2 text-right text-gray-700">Horas</th>
+          <th class="border border-gray-300 p-2 text-right text-gray-700">Precio por hora</th>
+          <th class="border border-gray-300 p-2 text-right text-gray-700">Importe</th>
         </tr>
       </thead>
       <tbody>
         @for (timer of invoiceSignal()?.timers; track $index) {
           <tr>
-            <td class="border p-2">{{ timer.commentary }}</td>
-            <td class="border p-2 text-right">{{ timer.elapsedTime }}</td>
-            <td class="border p-2 text-right">{{ timer.pricePerHour | currency:invoiceSignal()?.currency:'symbol':'' : 'es' }}</td>
-            <td class="border p-2 text-right">{{ timer.elapsedTime * timer.pricePerHour | currency:invoiceSignal()?.currency:'symbol':'': 'es' }}</td>
+            <td class="border border-gray-300 p-2">{{ timer.commentary }}</td>
+            <td class="border border-gray-300 p-2 text-right">{{ timer.elapsedTime }}</td>
+            <td class="border border-gray-300 p-2 text-right">{{ timer.pricePerHour | currency:invoiceSignal()?.currency:'symbol':'' : 'es' }}</td>
+            <td class="border border-gray-300 p-2 text-right">{{ timer.elapsedTime * timer.pricePerHour | currency:invoiceSignal()?.currency:'symbol':'': 'es' }}</td>
           </tr>
         }
       </tbody>
@@ -78,12 +78,12 @@ registerLocaleData(localeEs);
 
   <div class="flex justify-end">
     <div class="w-1/3">
-      <p class="flex justify-between mb-2"><span>Subtotal:</span> <span>{{invoiceSignal()?.subtotal | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
-      <p class="flex justify-between mb-2"><span>IVA {{invoiceSignal()?.ivaRate}}%:</span> <span>{{invoiceSignal()?.ivaAmount | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
+      <p class="flex justify-between mb-2 text-gray-700"><span>Subtotal:</span> <span>{{invoiceSignal()?.subtotal | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
+      <p class="flex justify-between mb-2 text-gray-700"><span>IVA {{invoiceSignal()?.ivaRate}}%:</span> <span>{{invoiceSignal()?.ivaAmount | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
       @if (invoiceSignal()?.irpfAmount! > 0) {
-      <p class="flex justify-between mb-2"><span>IRPF {{invoiceSignal()?.irpfRate}}%:</span> <span>-{{invoiceSignal()?.irpfAmount | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
+      <p class="flex justify-between mb-2 text-gray-700"><span>IRPF {{invoiceSignal()?.irpfRate}}%:</span> <span>-{{invoiceSignal()?.irpfAmount | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
       }
-      <p class="flex justify-between font-bold text-lg"><span>Total:</span> <span>{{invoiceSignal()?.total | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
+      <p class="flex justify-between font-bold text-lg text-gray-900"><span>Total:</span> <span>{{invoiceSignal()?.total | currency:invoiceSignal()?.currency:'symbol':'1.2-2' : 'es' }}</span></p>
     </div>
   </div>
 </div>

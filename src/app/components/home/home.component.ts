@@ -9,7 +9,7 @@ import { AsyncPipe } from '@angular/common';
   standalone: true,
   imports: [RouterLink, AsyncPipe],
   template: `
-    <div class="flex flex-col items-center justify-center min-h-screen text-center px-4 bg-primary">
+    <div class="flex flex-col items-center justify-center min-h-screen text-center px-4">
       <h1 class="text-4xl md:text-6xl font-bold mb-4 font-pangaia text-off-white">
         Tempo.
       </h1>

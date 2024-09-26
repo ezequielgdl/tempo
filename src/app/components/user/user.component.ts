@@ -12,42 +12,44 @@ import { Observable, switchMap, of, catchError, map } from 'rxjs';
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, MatIconModule],
   template: `
-    <div class="max-w-md mx-auto p-4 bg-off-white rounded-lg shadow-md my-10 relative">
-      <button (click)="signOut()" class="absolute top-4 right-4 text-sm text-primary hover:text-primary-dark flex items-center">
-        <mat-icon class="mr-1">logout</mat-icon>
-        <span>Cerrar sesión</span>
-      </button>
-      <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-        <h1 class="text-2xl font-bold mb-4 text-dark-gray">Perfil de Usuario</h1>
-        <div class="mb-4">
-          <label for="name" class="block text-dark-gray font-bold mb-2">Nombre:</label>
-          <input id="name" type="text" formControlName="name" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-        </div>
-        <div class="mb-4">
-          <label for="address" class="block text-dark-gray font-bold mb-2">Dirección:</label>
-          <input id="address" type="text" formControlName="address" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-        </div>
-        <div class="mb-4">
-          <label for="phone" class="block text-dark-gray font-bold mb-2">Teléfono:</label>
-          <input id="phone" type="tel" formControlName="phone" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-        </div>
-        <div class="mb-4">
-          <label for="website" class="block text-dark-gray font-bold mb-2">Sitio web:</label>
-          <input id="website" type="url" formControlName="website" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-        </div>
-        <div class="mb-6">
-          <label for="nif" class="block text-dark-gray font-bold mb-2">NIF:</label>
-          <input id="nif" type="text" formControlName="nif" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
-        </div>
-        <button type="submit" class="button-base button-primary w-full sm:w-auto">Guardar</button>
-      </form>
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 my-10">
+      <div class="max-w-md mx-auto bg-primary-darker rounded-lg shadow border border-off-white p-6 relative">
+        <button (click)="signOut()" class="absolute top-4 right-4 text-sm text-off-white hover:text-primary flex items-center">
+          <mat-icon class="mr-1">logout</mat-icon>
+          <span>Cerrar sesión</span>
+        </button>
+        <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+          <h2 class="text-2xl sm:text-3xl mb-4 sm:mb-6 text-off-white">Perfil de Usuario</h2>
+          <div class="mb-4">
+            <label for="name" class="block text-off-white font-bold mb-2">Nombre:</label>
+            <input id="name" type="text" formControlName="name" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
+          </div>
+          <div class="mb-4">
+            <label for="address" class="block text-off-white font-bold mb-2">Dirección:</label>
+            <input id="address" type="text" formControlName="address" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
+          </div>
+          <div class="mb-4">
+            <label for="phone" class="block text-off-white font-bold mb-2">Teléfono:</label>
+            <input id="phone" type="tel" formControlName="phone" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
+          </div>
+          <div class="mb-4">
+            <label for="website" class="block text-off-white font-bold mb-2">Sitio web:</label>
+            <input id="website" type="url" formControlName="website" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
+          </div>
+          <div class="mb-6">
+            <label for="nif" class="block text-off-white font-bold mb-2">NIF:</label>
+            <input id="nif" type="text" formControlName="nif" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
+          </div>
+          <button type="submit" class="button-base button-secondary w-full sm:w-auto">Guardar</button>
+        </form>
 
-      @if (submitError) {
-        <p class="text-red-500 mt-4">{{ submitError }}</p>
-      }
-      @if (submitSuccess) {
-        <p class="text-green-500 mt-4">¡Datos de usuario guardados exitosamente!</p>
-      }
+        @if (submitError) {
+          <p class="text-red-500 mt-4">{{ submitError }}</p>
+        }
+        @if (submitSuccess) {
+          <p class="text-green-500 mt-4">¡Datos de usuario guardados exitosamente!</p>
+        }
+      </div>
     </div>
   `,
   styles: `
