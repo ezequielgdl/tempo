@@ -141,7 +141,6 @@ export class InvoiceComponent implements OnInit {
   }
 
   saveInvoice(): void {
-    console.log(this.invoiceSignal());
     if (this.invoiceSignal()) {
       this.invoicesService.saveInvoice(this.invoiceSignal()!)
     } else {

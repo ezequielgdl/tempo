@@ -164,7 +164,7 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
     private invoiceHelperService: InvoiceHelperService
   ) {
     this.invoiceForm = this.fb.group({
-      invoiceNumber: ['', Validators.required],
+      invoiceNumber: [null, [Validators.required, Validators.minLength(1)]],
       issueDate: [this.invoiceHelperService.formatDate(new Date()), Validators.required],
       dueDate: [null, Validators.required],
       clientName: [this.client()?.name || '', Validators.required],
