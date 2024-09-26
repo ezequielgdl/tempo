@@ -85,7 +85,7 @@ import { InvoiceHelperService } from '../../../services/invoice-helper.service';
       }
       <button class="button-base button-secondary mb-6" (click)="addEmptyTimer()">Agregar Item</button>
 
-      <form [formGroup]="invoiceTimersForm" (ngSubmit)="onSubmit()" class="max-w-md mx-auto p-4 bg-primary-darker rounded-lg shadow-md border border-off-white my-10">
+      <form [formGroup]="invoiceTimersForm" (ngSubmit)="onSubmit()" class="mx-auto p-4 bg-primary-darker rounded-lg shadow-md border border-off-white mb-10">
       <div class="mb-6">
         <div class="mb-2">
           <label class="flex items-center text-off-white">

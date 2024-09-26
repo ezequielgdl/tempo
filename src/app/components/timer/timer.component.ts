@@ -20,7 +20,7 @@ import { interval, Subscription } from 'rxjs';
       }
 
       @if (timers().length === 0) {
-        <p class="text-lg">No timers found.</p>
+        <p class="text-lg"></p>
       } @else {
         <ul class="space-y-3 sm:space-y-4">
           @for (timer of timers(); track timer.id) {
