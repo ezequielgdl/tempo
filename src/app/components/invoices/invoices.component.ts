@@ -60,7 +60,7 @@ import { InvoicesService } from '../../services/invoices.service';
       
       @if (invoices$ | async; as invoices) {
         @if (invoices.length === 0) {
-          <p class="text-lg text-off-white">No invoices found.</p>
+          <p class="text-lg text-off-white">No hay facturas.</p>
         } @else {
           <div class="overflow-x-auto bg-primary-darker rounded-lg shadow border border-off-white">
             <table class="w-full table-auto">
@@ -85,6 +85,12 @@ import { InvoicesService } from '../../services/invoices.service';
                         [routerLink]="['/invoices', invoice.id]"
                       >
                         Ver factura
+                      </button>
+                      <button 
+                        class="button-base button-secondary w-full sm:w-auto mt-2 sm:mt-0 sm:ml-2"
+                        (click)="confirmRemoveInvoice(invoice)"
+                      >
+                        Eliminar
                       </button>
                     </td>
                   </tr>
@@ -115,5 +121,12 @@ export class InvoicesComponent {
 
   setInvoice(invoice: Invoice) {
     this.invoicesService.setCurrentInvoice(invoice);
+  }
+
+  confirmRemoveInvoice(invoice: Invoice) {
+    const confirmation = confirm('¿Estás seguro de que deseas eliminar esta factura?');
+    if (confirmation) {
+      this.invoicesService.removeInvoiceById(invoice.id);
+    }
   }
 }

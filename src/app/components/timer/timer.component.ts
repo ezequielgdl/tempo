@@ -29,6 +29,12 @@ import { interval, Subscription } from 'rxjs';
               <button (click)="toggleTimer(timer)" class="button-base button-secondary w-full sm:w-auto">
                 {{ timer.isRunning ? 'Stop' : 'Resume' }}
               </button>
+              <button 
+                class="button-base button-secondary w-full sm:w-auto"
+                (click)="removeTimer(timer)"
+              >
+                Eliminar
+              </button>
             </li>
           }
         </ul>
@@ -131,5 +137,15 @@ export class TimerComponent implements OnDestroy {
     const hours = Math.floor(timer.elapsedTime / 60);
     const minutes = timer.elapsedTime % 60;
     timer.formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  }
+
+  removeTimer(timer: Timer) {
+    if (timer.id !== undefined) {
+      this.timerService.deleteTimer(timer.id).then(() => {
+        this.timers.update(timers => timers.filter(t => t !== timer));
+      }).catch(error => {
+        console.error('Error deleting timer:', error);
+      });
+    }
   }
 }

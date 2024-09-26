@@ -81,4 +81,33 @@ export class InvoicesService {
     // Refresh the invoices after saving
     await this.refreshInvoices();
   }
+
+  // Fetch invoice by id
+  async getInvoiceById(invoiceId: string): Promise<Invoice | null> {
+    const user = await this.getAuthenticatedUser();
+    const { data, error } = await this.supabase
+      .from('invoices')
+      .select('*')
+      .eq('id', invoiceId)
+      .eq('user_id', user.id);
+
+    if (error) throw error;
+    return data ? data[0] as Invoice : null;
+  }
+
+  // Remove invoice by id
+  async removeInvoiceById(invoiceId: string): Promise<void> {
+    const user = await this.getAuthenticatedUser();
+    const { error } = await this.supabase
+      .from('invoices')
+      .delete()
+      .eq('id', invoiceId)
+      .eq('user_id', user.id);
+
+    if (error) throw error;
+
+    // Refresh the invoices after removing
+    await this.refreshInvoices();
+  }
+
 }

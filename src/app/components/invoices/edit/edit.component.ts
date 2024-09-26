@@ -193,7 +193,7 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
 
       this.clientService.getClientById(clientId).subscribe(client => {
         this.client.set(client);
-        this.invoiceForm.get('client')?.setValue(client?.name || '');
+        this.invoiceForm.get('clientName')?.setValue(client?.name);
         
         if (invoiceId) {
           this.invoicesService.getCurrentInvoice().subscribe(existingInvoice => {
@@ -201,9 +201,11 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
               this.invoice = existingInvoice;
               this.clientService.getClientById(existingInvoice.clientId).subscribe(client => {
                 this.client.set(client);
+                this.invoiceForm.get('clientName')?.setValue(client?.name || '');
               });
               this.invoiceHelperService.populateFormWithInvoice(this.invoiceForm, existingInvoice);
               this.clientTimers.set(existingInvoice.timers);
+              this.updateTotals();
             } else {
               console.error('Invoice not found');
             }
@@ -304,6 +306,7 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
       this.invoice = { ...invoiceData, id: crypto.randomUUID() };
     }
     this.invoicesService.setCurrentInvoice(this.invoice!);
+    this.invoicesService.saveInvoice(this.invoice!);
     this.router.navigate(['/invoices', this.invoice!.id]);
   }
 

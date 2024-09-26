@@ -20,7 +20,7 @@ registerLocaleData(localeEs);
   template: `
 <button class="button-base button-secondary mt-4 mb-4 mx-4" (click)="generatePDF()">Generar PDF</button>
 <button class="button-base button-secondary mt-4 mb-4 mx-4" (click)="editInvoice()">Editar</button>
-<button class="button-base button-secondary mt-4 mb-4 mx-4" (click)="saveInvoice()">Guardar</button>
+<button class="button-base button-secondary mt-4 mb-4 mx-4" (click)="removeInvoice()">Eliminar</button>
 <div #invoiceContent class="max-w-4xl mx-auto my-8 bg-white shadow-sm rounded-sm border border-gray-200 p-8 m-4 text-gray-800">
   <div class="text-center mb-6">
     <h1 class="text-3xl font-bold mb-2 text-gray-900">FACTURA</h1>
@@ -119,8 +119,16 @@ export class InvoiceComponent implements OnInit {
           });
         }
       } else {
-        console.error('Invoice not found');
-        // Handle error (e.g., redirect to 404 page)
+        this.invoicesService.getInvoiceById(invoiceId).then(invoice => {
+          this.invoiceSignal.set(invoice);
+          if (invoice && invoice.clientId) {
+            this.clientService.getClientById(invoice.clientId).subscribe(client => {
+              this.clientSignal.set(client);
+            });
+          }
+        }).catch(error => {
+          console.error('Error fetching invoice:', error);
+        });
       }
     });
   }
@@ -134,18 +142,18 @@ export class InvoiceComponent implements OnInit {
     }
   }
 
+  removeInvoice(): void {
+    const invoiceId = this.route.snapshot.params['invoiceId'];
+    if (invoiceId) {
+      this.invoicesService.removeInvoiceById(invoiceId);
+      this.router.navigate(['/invoices']);
+    }
+  }
+
   private initializeUserData(): void {
     this.userService.getUser().subscribe(user => {
       this.userSignal.set(user);
     });
-  }
-
-  saveInvoice(): void {
-    if (this.invoiceSignal()) {
-      this.invoicesService.saveInvoice(this.invoiceSignal()!)
-    } else {
-      console.error('No invoice data available');
-    }
   }
 
   generatePDF(): void {
