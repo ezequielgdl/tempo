@@ -7,7 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { Client } from '../../../interfaces';
 import { AuthService } from '../../../services/auth-service.service';
 import { ClientService } from '../../../services/client.service';
-
+import { ToastService } from '../../../ui/toast/toast.service';
 @Component({
   selector: 'app-new',
   standalone: true,
@@ -68,7 +68,8 @@ export class NewComponent {
     private fb: FormBuilder,
     private router: Router,
     private clientService: ClientService,
-    private authService: AuthService
+    private authService: AuthService,
+    private toastService: ToastService
   ) {
     this.clientForm = this.fb.group({
       name: ['', Validators.required],
@@ -99,9 +100,11 @@ export class NewComponent {
         this.clientService.createClient(newClient).subscribe({
           next: (createdClient) => {
             if (createdClient && createdClient.id) {
+              this.toastService.show('Cliente creado correctamente', 'success');
               this.router.navigate(['/clients']);
             } else {
               console.error('Error creating client: Client not created');
+              this.toastService.show('Error creando cliente', 'error');
             }
           },
           error: (error) => {

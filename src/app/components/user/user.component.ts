@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth-service.service';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { Observable, switchMap, of, catchError, map } from 'rxjs';
+import { ToastService } from '../../ui/toast/toast.service';
 
 @Component({
   selector: 'app-user',
@@ -42,13 +43,6 @@ import { Observable, switchMap, of, catchError, map } from 'rxjs';
           </div>
           <button type="submit" class="button-base button-secondary w-full sm:w-auto">Guardar</button>
         </form>
-
-        @if (submitError) {
-          <p class="text-red-500 mt-4">{{ submitError }}</p>
-        }
-        @if (submitSuccess) {
-          <p class="text-green-500 mt-4">¡Datos de usuario guardados exitosamente!</p>
-        }
       </div>
     </div>
   `,
@@ -59,10 +53,8 @@ import { Observable, switchMap, of, catchError, map } from 'rxjs';
 export class UserComponent implements OnInit {
   userForm: FormGroup;
   userId$: Observable<string | null>;
-  submitError: string | null = null;
-  submitSuccess: boolean = false;
 
-  constructor(private fb: FormBuilder, private userService: UserService, private authService: AuthService, private router: Router) {
+  constructor(private fb: FormBuilder, private userService: UserService, private authService: AuthService, private router: Router, private toastService: ToastService) {
     this.userForm = this.fb.group({
       name: ['', Validators.required],
       address: ['', Validators.required],
@@ -74,9 +66,6 @@ export class UserComponent implements OnInit {
     this.userId$ = this.authService.getCurrentUser().pipe(
       map(user => user?.id || null)
     );
-
-    this.submitError = null;
-    this.submitSuccess = false;
   }
 
   ngOnInit() {
@@ -94,9 +83,6 @@ export class UserComponent implements OnInit {
   }
 
   onSubmit() {
-    this.submitError = null;
-    this.submitSuccess = false;
-
     if (this.userForm.valid) {
       this.userId$.pipe(
         switchMap(userId => {
@@ -108,15 +94,15 @@ export class UserComponent implements OnInit {
       ).subscribe({
         next: () => {
           this.userForm.markAsPristine();
-          this.submitSuccess = true;
+          this.toastService.show('Datos de usuario guardados exitosamente', 'success');
         },
         error: (error) => {
           console.error('Error saving user data', error);
-          this.submitError = 'An error occurred while saving user data. Please try again.';
+          this.toastService.show('Error guardando datos de usuario', 'error');
         }
       });
     } else {
-      this.submitError = 'Please fill in all required fields correctly.';
+      this.toastService.show('Por favor, rellena todos los campos correctamente.', 'info');
     }
   }
 
@@ -131,6 +117,3 @@ export class UserComponent implements OnInit {
     });
   }
 }
-
-
-

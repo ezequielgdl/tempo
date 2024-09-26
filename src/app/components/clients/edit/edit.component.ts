@@ -6,6 +6,7 @@ import { Subject, takeUntil } from 'rxjs';
 
 import { Client } from '../../../interfaces';
 import { ClientService } from '../../../services/client.service';
+import { ToastService } from '../../../ui/toast/toast.service';
 
 @Component({
   selector: 'app-edit',
@@ -67,7 +68,8 @@ export class EditComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private clientService: ClientService
+    private clientService: ClientService,
+    private toastService: ToastService
   ) {
     this.clientForm = this.fb.group({
       name: ['', Validators.required],
@@ -112,9 +114,11 @@ export class EditComponent implements OnInit, OnDestroy {
       ).subscribe({
         next: () => {
           this.router.navigate(['/clients']);
+          this.toastService.show('Cliente actualizado correctamente', 'success');
         },
         error: (error) => {
           console.error('Error updating client:', error);
+          this.toastService.show('Error actualizando cliente', 'error');
         }
       });
     }
