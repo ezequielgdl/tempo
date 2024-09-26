@@ -91,11 +91,8 @@ registerLocaleData(localeEs);
   styles: ``
 })
 export class InvoiceComponent implements OnInit {
-
   invoiceSignal = signal<Invoice | null>(null);
-
   clientSignal = signal<Client | null>(null);
-
   userSignal = signal<UserInfo | null>(null);
 
   @ViewChild('invoiceContent') invoiceContent!: ElementRef;
@@ -145,36 +142,40 @@ export class InvoiceComponent implements OnInit {
 
   saveInvoice(): void {
     console.log(this.invoiceSignal());
+    if (this.invoiceSignal()) {
+      this.invoicesService.saveInvoice(this.invoiceSignal()!)
+    } else {
+      console.error('No invoice data available');
+    }
   }
 
-generatePDF(): void {
-  const element = this.invoiceContent.nativeElement;
-  const pdf = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4'
-  });
+  generatePDF(): void {
+    const element = this.invoiceContent.nativeElement;
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
 
-  html2canvas(element).then((canvas) => {
-    const imgData = canvas.toDataURL('image/png');
-    const imgWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    
-    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    html2canvas(element).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
 
-    // If the content is longer than one page, add more pages
-    if (imgHeight > pageHeight) {
-      const pageCount = Math.ceil(imgHeight / pageHeight);
-      for (let i = 1; i < pageCount; i++) {
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, -(pageHeight * i), imgWidth, imgHeight);
+      // If the content is longer than one page, add more pages
+      if (imgHeight > pageHeight) {
+        const pageCount = Math.ceil(imgHeight / pageHeight);
+        for (let i = 1; i < pageCount; i++) {
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, -(pageHeight * i), imgWidth, imgHeight);
+        }
       }
-    }
 
-    // Open PDF in a new tab
-    window.open(URL.createObjectURL(pdf.output('blob')), '_blank');
-  });
-}
-
+      // Open PDF in a new tab
+      window.open(URL.createObjectURL(pdf.output('blob')), '_blank');
+    });
+  }
 }

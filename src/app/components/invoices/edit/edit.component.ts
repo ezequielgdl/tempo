@@ -33,7 +33,7 @@ import { InvoiceHelperService } from '../../../services/invoice-helper.service';
           </div>
           <div>
             <label for="client" class="block text-dark-gray font-bold mb-2">Cliente:</label>
-            <input id="client" type="text" formControlName="client" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+            <input id="client" type="text" formControlName="clientName" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
           </div>
           <div>
             <label for="ivaRate" class="block text-dark-gray font-bold mb-2">IVA (%):</label>
@@ -166,8 +166,8 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
     this.invoiceForm = this.fb.group({
       invoiceNumber: ['', Validators.required],
       issueDate: [this.invoiceHelperService.formatDate(new Date()), Validators.required],
-      dueDate: ['', Validators.required],
-      client: [this.client()?.name || '', Validators.required],
+      dueDate: [null, Validators.required],
+      clientName: [this.client()?.name || '', Validators.required],
       ivaRate: [21, [Validators.required, Validators.min(0), Validators.max(100)]],
       irpfRate: [15, [Validators.required, Validators.min(0), Validators.max(100)]],
       currency: ['EUR', Validators.required],
@@ -289,13 +289,13 @@ export class EditInvoiceComponent implements OnInit, OnDestroy {
       ...this.invoiceForm.value,
       timers: this.clientTimers(),
       clientId: this.client()?.id,
-      clientName: this.client()?.name,
       subtotal: this.subtotal(),
       ivaRate: this.invoiceForm.get('ivaRate')?.value,
       irpfRate: this.invoiceForm.get('irpfRate')?.value,
       ivaAmount: this.ivaAmount(),
       irpfAmount: this.irpfAmount(),
-      total: this.totalInvoice()
+      total: this.totalInvoice(),
+      isPaid: false
     };
 
     if (this.invoice) {

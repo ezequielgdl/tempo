@@ -26,24 +26,24 @@ export interface Timer {
   }
 
 export interface Invoice {
-    id: string;
     clientId: string;
     clientName: string;
-    invoiceNumber: number | string;
-    date: string;
-    subtotal: number;
-    total: number;
-    isPaid: boolean;
-    timers: Timer[];
-    issueDate: string;
-    dueDate: string;
-    ivaRate: number;
-    irpfRate: number;
-    ivaAmount: number;
-    irpfAmount: number;
     currency: string;
-    subject: string;
+    date: string;
+    dueDate: string;
+    id: string;
+    invoiceNumber: string;
+    irpfAmount: number;
+    irpfRate: number;
+    isPaid: boolean;
+    issueDate: string;
+    ivaAmount: number;
+    ivaRate: number;
     notes: string;
+    subject: string;
+    subtotal: number;
+    timers: Timer[];
+    total: number;
   }
 
   export interface UserInfo {
