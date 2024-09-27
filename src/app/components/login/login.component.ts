@@ -21,6 +21,9 @@ import { AuthService } from '../../services/auth-service.service';
             <label for="password" class="block text-off-white mb-2">Password:</label>
             <input type="password" id="password" formControlName="password" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
           </div>
+          @if (errorMessage) {
+            <p class="text-red-500">{{ errorMessage }}</p>
+          }
           <button class="button-base button-secondary w-full" type="submit" [disabled]="!loginForm.valid">Login</button>
         </form>
       </div>
@@ -30,7 +33,7 @@ import { AuthService } from '../../services/auth-service.service';
 })
 export class LoginComponent {
   loginForm: FormGroup;
-
+  errorMessage: string = '';
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
@@ -42,12 +45,17 @@ export class LoginComponent {
     });
   }
 
-  async onSubmit() {
+  onSubmit() {
     if (this.loginForm.valid) {
       try {
         const { email, password } = this.loginForm.value;
-        await this.authService.login(email, password);
-        this.router.navigate(['/clients']);
+        this.authService.login(email, password).subscribe((next) => {
+          if (next) {
+            this.router.navigate(['/clients']);
+          } else {
+            this.errorMessage = 'Email o contraseña incorrectos';
+          }
+        });
       } catch (error) {
         console.error('Error signing in:', error);
       }

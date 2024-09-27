@@ -60,7 +60,6 @@ export class AuthService {
     return from(this.supabase.auth.signOut()).pipe(
       tap(() => {
         this.currentUserSubject.next(null);
-        // Emit the updated auth state immediately
         this.supabase.auth.onAuthStateChange((_, session) => {
           this.currentUserSubject.next(session?.user ?? null);
         });
