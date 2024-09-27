@@ -18,7 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
         </svg>
       </button>
       <ul [ngClass]="{'hidden': !isMenuOpen, 'flex': isMenuOpen}" 
-      class="flex-col md:flex-row absolute md:relative top-16 left-0 right-0 md:top-auto left-0 right-0 md:left-auto md:right-auto text-off-white md:flex items-center space-y-4 md:space-y-0 md:space-x-2 p-4 md:p-0">
+      class="flex-col md:flex-row absolute md:relative top-16 left-0 right-0 md:top-auto left-0 right-0 md:left-auto md:right-auto bg-primary-dark text-off-white md:flex items-center space-y-4 md:space-y-0 md:space-x-2 p-4 md:p-0">
         <li><a routerLink="/clients" class="block transition-colors button-base button-primary">Clientes</a></li>
         <li><a routerLink="/timer" class="block transition-colors button-base button-primary">Timer</a></li>
         <li><a routerLink="/invoices" class="block transition-colors button-base button-primary">Facturas</a></li>

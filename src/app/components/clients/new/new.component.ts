@@ -55,7 +55,7 @@ import { ToastService } from '../../../ui/toast/toast.service';
 
         <div class="flex justify-between">
           <button class="button-base button-secondary w-full sm:w-auto mr-2" type="submit" [disabled]="clientForm.invalid">Guardar</button>
-          <button class="button-base button-secondary w-full sm:w-auto" type="button" routerLink="/clients">Cancelar</button>
+          <button class="button-base button-cancel w-full sm:w-auto" type="button" routerLink="/clients">Cancelar</button>
         </div>
       </form>
     </div>

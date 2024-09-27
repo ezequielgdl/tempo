@@ -32,7 +32,7 @@ import { Client } from '../../../interfaces';
 
         <div class="flex justify-between">
           <button class="button-base button-secondary w-full sm:w-auto mr-2" (click)="saveEntry()">Empezar</button>
-          <button class="button-base button-secondary w-full sm:w-auto" (click)="closeModal()">Cancelar</button>
+          <button class="button-base button-cancel w-full sm:w-auto" (click)="closeModal()">Cancelar</button>
         </div>
       </div>
     </div>

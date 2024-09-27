@@ -17,7 +17,7 @@ import { ClientService } from '../../services/client.service';
 
       @if (clients$ | async; as clients) {
         @if (clients.length === 0) {
-          <p class="text-lg text-off-white">No clients found.</p>
+          <p class="text-off-white">No hay clientes.</p>
         } @else {
           <ul class="space-y-3 sm:space-y-4">
               @for (client of clients; track client.id) {
@@ -25,7 +25,7 @@ import { ClientService } from '../../services/client.service';
                   <span class="mb-2 sm:mb-0 text-off-white">{{ client.name }}</span>
                   <div class="flex space-x-2 w-full sm:w-auto">
                     <button class="button-base button-secondary flex-1 sm:flex-none" [routerLink]="['/clients', client.id, 'edit']">Editar</button>
-                    <button class="button-base button-secondary flex-1 sm:flex-none" (click)="deleteClient(client.id)">Eliminar</button>
+                    <button class="button-base button-cancel flex-1 sm:flex-none" (click)="deleteClient(client.id)">Eliminar</button>
                   </div>
                 </li>
               }

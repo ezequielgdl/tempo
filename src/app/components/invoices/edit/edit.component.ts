@@ -9,11 +9,11 @@ import { ClientTimersService } from '../../../services/client-timers.service';
 import { TimerService } from '../../../services/timer.service';
 import { InvoicesService } from '../../../services/invoices.service';
 import { InvoiceHelperService } from '../../../services/invoice-helper.service';
-
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-edit-invoice',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatIconModule],
   template: `
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 my-10">
       <h2 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-off-white">Factura</h2>
@@ -65,22 +65,24 @@ import { InvoiceHelperService } from '../../../services/invoice-helper.service';
       <h3 class="text-xl font-bold mt-8 mb-4 text-off-white">Client Timers</h3>
       
       @for (timer of clientTimers(); track $index) {
-        <div class="flex flex-wrap items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-4 bg-primary-darker p-4 rounded-lg border border-off-white">
-          <label class="w-full sm:w-auto">
-            <input type="text" [(ngModel)]="timer.commentary" placeholder="Observaciones" class="w-full sm:w-auto px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
+        <div class="flex flex-col lg:flex-row items-start mb-4 bg-primary-darker p-4 rounded-lg border border-off-white">
+          <label class="w-full lg:w-1/2 mb-4 lg:mb-0 lg:pr-2">
+            <input type="text" [(ngModel)]="timer.commentary" placeholder="Concepto" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
           </label>
-          <label class="w-full sm:w-auto text-off-white">
-            Horas/Unidad:
-            <input type="text" [(ngModel)]="timer.elapsedTime" (ngModelChange)="updateTotals()" class="w-24 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
-          </label>
-          <label class="w-full sm:w-auto text-off-white">
-            Precio x hora/unidad:
-            <input type="text" [(ngModel)]="timer.pricePerHour" (ngModelChange)="updateTotals()" class="w-24 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
-          </label>
-          <span class="w-full sm:w-auto text-off-white">
-            {{ timer.elapsedTime * timer.pricePerHour | currency:invoiceForm.get('currency')?.value }}
-          </span>
-          <button class="button-base button-secondary" (click)="removeTimer(timer)">X</button>
+          <div class="w-full lg:w-1/2 flex flex-col lg:flex-row items-end lg:items-center justify-around lg:space-x-2">
+            <label class="w-full lg:w-auto text-off-white mb-2 lg:mb-0">
+              Horas/Unidad:
+              <input type="text" [(ngModel)]="timer.elapsedTime" (ngModelChange)="updateTotals()" class="w-full lg:w-24 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
+            </label>
+            <label class="w-full lg:w-auto text-off-white mb-2 lg:mb-0">
+              Precio x hora/unidad:
+              <input type="text" [(ngModel)]="timer.pricePerHour" (ngModelChange)="updateTotals()" class="w-full lg:w-24 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
+            </label>
+            <span class="w-full lg:w-auto text-off-white mb-2 lg:mb-0">
+              {{ timer.elapsedTime * timer.pricePerHour | currency:invoiceForm.get('currency')?.value }}
+            </span>
+            <button class="w-full lg:w-auto mt-2 lg:mt-0 hover:text-primary" (click)="removeTimer(timer)"><mat-icon>cancel</mat-icon></button>
+          </div>
         </div>
       }
       <button class="button-base button-secondary mb-6" (click)="addEmptyTimer()">Agregar Item</button>
@@ -124,15 +126,15 @@ import { InvoiceHelperService } from '../../../services/invoice-helper.service';
       <button class="button-base button-secondary w-full sm:w-auto" type="submit">Agregar Timers</button>
     </form>
 
-      <div class="space-y-2 text-lg text-off-white">
+      <div class="space-y-2 text-lg text-off-white text-right">
         <div>Subtotal: {{ subtotal() | currency:invoiceForm.get('currency')?.value }}</div>
         <div>IVA ({{ invoiceForm.get('ivaRate')?.value }}%): {{ ivaAmount() | currency:invoiceForm.get('currency')?.value }}</div>
         <div>IRPF ({{ invoiceForm.get('irpfRate')?.value }}%): -{{ irpfAmount() | currency:invoiceForm.get('currency')?.value }}</div>
-        <div class="font-bold">Total Invoice: {{ totalInvoice() | currency:invoiceForm.get('currency')?.value }}</div>
+        <div class="font-bold">Total: {{ totalInvoice() | currency:invoiceForm.get('currency')?.value }}</div>
       </div>
-      <div class="mt-6 space-x-4">
+      <div class="mt-6 space-x-4 text-right">
+      <button class="button-base button-cancel" (click)="cancelInvoice()">Cancelar</button>
         <button class="button-base button-secondary" type="submit" form="invoiceForm">Ver Factura</button>
-        <button class="button-base button-secondary" (click)="cancelInvoice()">Cancelar</button>
       </div>
     </div>
   `,

@@ -47,7 +47,7 @@ import { InvoicesService } from '../../services/invoices.service';
                   Crear
                 </button>
                 <button 
-                  class="button-base button-secondary"
+                  class="button-base button-cancel"
                   (click)="toggleDropdown()"
                 >
                   Cancelar

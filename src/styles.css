@@ -10,7 +10,7 @@ body {
 }
 
 .button-base {
-    @apply rounded-lg text-sm px-5 py-2.5 focus:outline-none;
+    @apply rounded-lg text-sm px-5 py-2.5 focus:outline-none cursor-pointer;
 }
 
 .button-primary {
@@ -18,6 +18,10 @@ body {
 }
 
 .button-secondary {
+    @apply bg-primary-light text-white hover:bg-primary-lighter focus:ring-2;
+}
+
+.button-cancel {
     @apply bg-primary-light text-white hover:bg-primary-lighter focus:ring-2;
 }
 
