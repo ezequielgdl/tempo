@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, from, of } from 'rxjs';
+import { Observable, BehaviorSubject, from, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { SupabaseClient, User } from '@supabase/supabase-js';
 import { SupabaseService } from './supabase.service';
@@ -69,6 +69,29 @@ export class AuthService {
         return of(void 0);
       }),
       map(() => void 0)
+    );
+  }
+
+  resetPassword(email: string): Observable<any> {
+    return from(this.supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    }));
+  }
+
+  updatePasswordWithToken(newPassword: string): Observable<User | null> {
+    return from(this.supabase.auth.updateUser({ 
+      password: newPassword 
+    })).pipe(
+      map(({ data }) => data.user),
+      tap(user => {
+        if (user) {
+          this.currentUserSubject.next(user);
+        }
+      }),
+      catchError((error) => {
+        console.error('Error updating password:', error);
+        return throwError(() => new Error('Failed to update password'));
+      })
     );
   }
 }

@@ -48,12 +48,18 @@ export class ClientService {
   }
 
   createClient(client: Omit<Client, 'id' | 'user_id'>): Observable<Client | null> {
-    return from(this.supabase
-      .from('clients')
-      .insert(client)
-      .select()
-      .single()
-    ).pipe(
+    return this.authService.getCurrentUser().pipe(
+      switchMap(user => {
+        if (!user) {
+          throw new Error('User not authenticated');
+        }
+        return from(this.supabase
+          .from('clients')
+          .insert({ ...client, user_id: user.id })
+          .select()
+          .single()
+        );
+      }),
       map(({ data, error }) => {
         if (error) throw error;
         return data as Client;

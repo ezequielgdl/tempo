@@ -22,9 +22,12 @@ import { AuthService } from '../../services/auth-service.service';
             <input type="password" id="password" formControlName="password" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
           </div>
           @if (errorMessage) {
-            <p class="text-red-500">{{ errorMessage }}</p>
+            <p class="text-amber-400">{{ errorMessage }}</p>
           }
           <button class="button-base button-secondary w-full" type="submit" [disabled]="!loginForm.valid">Login</button>
+          <div class="text-center">
+            <a (click)="forgotPassword()" class="cursor-pointer">Me olvidé mi contraseña</a>
+          </div>
         </form>
       </div>
     </div>
@@ -43,6 +46,23 @@ export class LoginComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]]
     });
+  }
+
+  forgotPassword() {
+    const email = this.loginForm.get('email')?.value;
+    if (email) {
+      this.authService.resetPassword(email).subscribe({
+        next: () => {
+          this.errorMessage = 'Email de reseteo enviado. Por favor, revisa tu bandeja de entrada.';
+        },
+        error: (error) => {
+          console.error('Error sending reset password email:', error);
+          this.errorMessage = 'Hubo un error al enviar el email o el email no es correcto.';
+        }
+      });
+    } else {
+      this.errorMessage = 'Por favor, introduce tu email.';
+    }
   }
 
   onSubmit() {

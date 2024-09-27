@@ -22,19 +22,19 @@ import { AuthService } from '../../services/auth-service.service';
             <input type="password" id="password" formControlName="password" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-primary-dark text-off-white">
           </div>
           @if (errorMessage) {
-            <p class="text-red-500">{{ errorMessage }}</p>
+            <p class="text-amber-400">{{ errorMessage }}</p>
           }
           @if (signupForm.get('email')?.hasError('required') && signupForm.get('email')?.touched) {
-            <p class="text-red-500">El email es requerido.</p>
+            <p class="text-amber-400">El email es requerido.</p>
           }
           @if (signupForm.get('email')?.hasError('email') && signupForm.get('email')?.touched) {
-            <p class="text-red-500">Por favor, ingrese un email válido.</p>
+            <p class="text-amber-400">Por favor, ingrese un email válido.</p>
           }
           @if (signupForm.get('password')?.hasError('required') && signupForm.get('password')?.touched) {
-            <p class="text-red-500">La contraseña es requerida.</p>
+            <p class="text-amber-400">La contraseña es requerida.</p>
           }
           @if (signupForm.get('password')?.hasError('minlength') && signupForm.get('password')?.touched) {
-            <p class="text-red-500">La contraseña debe tener al menos 6 caracteres.</p>
+            <p class="text-amber-400">La contraseña debe tener al menos 6 caracteres.</p>
           }
           <button class="button-base button-secondary w-full" type="submit" [disabled]="!signupForm.valid">Registrarse</button>
         </form>

@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subject, takeUntil } from 'rxjs';
 
 import { Client } from '../../../interfaces';
 import { AuthService } from '../../../services/auth-service.service';
 import { ClientService } from '../../../services/client.service';
 import { ToastService } from '../../../ui/toast/toast.service';
+
 @Component({
   selector: 'app-new',
   standalone: true,
@@ -61,8 +62,9 @@ import { ToastService } from '../../../ui/toast/toast.service';
   `,
   styles: ``
 })
-export class NewComponent {
+export class NewComponent implements OnDestroy {
   clientForm: FormGroup;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
@@ -82,36 +84,23 @@ export class NewComponent {
 
   onSubmit() {
     if (this.clientForm.valid) {
-      this.authService.getCurrentUser().subscribe(user => {
-        if (!user) {
-          console.error('No authenticated user');
-          return;
-        }
-
-        const newClient: Omit<Client, 'id'> = {
-          name: this.clientForm.controls['name'].value,
-          email: this.clientForm.controls['email'].value,
-          phone: this.clientForm.controls['phone'].value,
-          address: this.clientForm.controls['address'].value,
-          user_id: user.id,
-          pricePerHour: this.clientForm.controls['pricePerHour'].value
-        };
-
-        this.clientService.createClient(newClient).subscribe({
-          next: (createdClient) => {
-            if (createdClient && createdClient.id) {
-              this.toastService.show('Cliente creado correctamente', 'success');
-              this.router.navigate(['/clients']);
-            } else {
-              console.error('Error creating client: Client not created');
-              this.toastService.show('Error creando cliente', 'error');
-            }
+      this.clientService.createClient(this.clientForm.value)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (client) => {
+            this.toastService.show('Cliente creado exitosamente', 'success');
+            this.router.navigate(['/clients']);
           },
           error: (error) => {
             console.error('Error creating client:', error);
+            this.toastService.show('Error al crear el cliente', 'error');
           }
         });
-      });
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

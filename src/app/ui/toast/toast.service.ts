@@ -1,16 +1,35 @@
-import { Injectable } from '@angular/core';
-import { ToastComponent } from './toast.component';
+import { Injectable, signal, computed } from '@angular/core';
+
+export interface Toast {
+  id: number;
+  message: string;
+  type: 'success' | 'error' | 'info';
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class ToastService {
-  private toaster!: ToastComponent;
+  private toasts = signal<Toast[]>([]);
+  private nextId = 1;
 
-  register(toaster:ToastComponent){
-    this.toaster = toaster;
+  activeToasts = computed(() => this.toasts());
+
+  show(message: string, type: 'success' | 'error' | 'info') {
+    const id = this.nextId++;
+    this.toasts.update(currentToasts => [
+      ...currentToasts,
+      { id, message, type }
+    ]);
+
+    setTimeout(() => {
+      this.removeToast(id);
+    }, 3000);
   }
 
-  show(message:string, type:'success' | 'error' | 'info'){
-    this.toaster.showToast(message, type);
+  removeToast(id: number) {
+    this.toasts.update(currentToasts => 
+      currentToasts.filter(toast => toast.id !== id)
+    );
   }
 }
