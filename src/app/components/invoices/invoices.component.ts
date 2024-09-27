@@ -2,23 +2,25 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { Client, Invoice } from '../../interfaces';
 import { ClientService } from '../../services/client.service';
 import { InvoicesService } from '../../services/invoices.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-invoices',
   standalone: true,
-  imports: [FormsModule, RouterModule, AsyncPipe, CurrencyPipe, DatePipe],
+  imports: [FormsModule, RouterModule, AsyncPipe, CurrencyPipe, DatePipe, MatIconModule],
   template: `
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 my-10">
-      <h2 class="text-2xl sm:text-3xl mb-4 sm:mb-6 text-off-white">Facturas</h2>
-      
-      <button class="button-base button-secondary w-full sm:w-auto mb-4 sm:mb-6" (click)="toggleDropdown()">
-        Nueva Factura
-      </button>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl sm:text-3xl text-off-white">Facturas</h2>
+        <button class="button-base button-secondary w-full sm:w-auto" (click)="toggleDropdown()">
+          Nueva Factura
+        </button>
+      </div>
       
       @if (isDropdownOpen) {
         <div class="fixed inset-0 z-50 overflow-auto bg-primary-dark bg-opacity-50 flex items-center justify-center">
@@ -66,10 +68,10 @@ import { InvoicesService } from '../../services/invoices.service';
             <table class="w-full table-auto">
               <thead class="bg-primary-dark">
                 <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-off-white uppercase tracking-wider">Fecha de emisión</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-off-white uppercase tracking-wider">Fecha de emisión <mat-icon (click)="toggleSortInvoices()">unfold_more</mat-icon></th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-off-white uppercase tracking-wider">Número de factura</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-off-white uppercase tracking-wider">Total</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-off-white uppercase tracking-wider">Acción</th>
+                  <th class="px-6 py-3 text-center text-xs font-medium text-off-white uppercase tracking-wider">Acción</th>
                 </tr>
               </thead>
               <tbody class="bg-primary-darker divide-y divide-off-white">
@@ -78,7 +80,7 @@ import { InvoicesService } from '../../services/invoices.service';
                     <td class="px-6 py-4 whitespace-nowrap text-off-white">{{ invoice.issueDate | date:'dd/MM/yyyy' }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-off-white">{{ invoice.invoiceNumber }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-off-white">{{ invoice.total | currency:invoice.currency }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
                       <button 
                         class="button-base button-secondary w-full sm:w-auto"
                         (click)="setInvoice(invoice)" 
@@ -109,7 +111,7 @@ export class InvoicesComponent {
   selectedClientId = '';
   clients$: Observable<Client[]>;
   invoices$: Observable<Invoice[]>;
-
+  isAscending = false;
   constructor(private clientService: ClientService, private invoicesService: InvoicesService) {
     this.clients$ = this.clientService.getClients();
     this.invoices$ = this.invoicesService.getInvoices();
@@ -128,5 +130,20 @@ export class InvoicesComponent {
     if (confirmation) {
       this.invoicesService.removeInvoiceById(invoice.id);
     }
+  }
+
+  // func to toggle sort invoices by issueDate
+  toggleSortInvoices() {
+    this.invoices$ = this.invoices$.pipe(
+      map(invoices => {
+        const sortedInvoices = [...invoices];
+        return sortedInvoices.sort((a, b) => {
+          const dateA = new Date(a.issueDate).getTime();
+          const dateB = new Date(b.issueDate).getTime();
+          return this.isAscending ? dateB - dateA : dateA - dateB;
+        });
+      })
+    );
+    this.isAscending = !this.isAscending;
   }
 }
