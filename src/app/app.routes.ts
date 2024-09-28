@@ -12,6 +12,7 @@ import { EditInvoiceComponent } from './components/invoices/edit/edit.component'
 import { InvoiceComponent } from './components/invoices/invoice/invoice.component';
 import { UserComponent } from './components/user/user.component';
 import { ResetPasswordComponent } from './components/login/reset-password/reset-password.component';
+import { AnalyticsComponent } from './components/analytics/analytics.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -27,4 +28,5 @@ export const routes: Routes = [
   { path: 'invoices/:invoiceId', component: InvoiceComponent, canActivate: [AuthGuard] },
   { path: 'user', component: UserComponent, canActivate: [AuthGuard] },
   { path: 'reset-password', component: ResetPasswordComponent},
+  { path: 'analytics', component: AnalyticsComponent, canActivate: [AuthGuard] },
 ];

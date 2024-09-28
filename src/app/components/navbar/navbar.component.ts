@@ -22,6 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
         <li><a routerLink="/clients" class="block transition-colors button-base button-primary">Clientes</a></li>
         <li><a routerLink="/timer" class="block transition-colors button-base button-primary">Timer</a></li>
         <li><a routerLink="/invoices" class="block transition-colors button-base button-primary">Facturas</a></li>
+        <li><a routerLink="/analytics" class="block transition-colors button-base button-primary">Analíticas</a></li>
         <li><a routerLink="/user" class="block transition-colors hover:text-off-white/80"><mat-icon>person</mat-icon></a></li>
       </ul>
     </nav>
