@@ -11,10 +11,7 @@ module.exports = {
         'primary-darker': '#01328E',
         'primary-light': '#0241b6',
         'primary-lighter': '#024FDE',
-        'accent': '#FFC107',
         'off-white': '#FAFAFA',
-        'dark-gray': '#333333',
-        'light-gray': '#BDBDBD',
       },
       fontFamily: {
         'pangaia': ['PP Pangaia', 'sans-serif'],
@@ -24,4 +21,3 @@ module.exports = {
   },
   plugins: [],
 }
-

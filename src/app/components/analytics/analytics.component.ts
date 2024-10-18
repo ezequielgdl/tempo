@@ -7,7 +7,6 @@ import { InvoicesService } from '../../services/invoices.service';
 // RxJS
 import { map, Observable } from 'rxjs';
 // Interfaces
-import { Client } from '../../interfaces';
 import { Invoice } from '../../interfaces';
 
 @Component({
